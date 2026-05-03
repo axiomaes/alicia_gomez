@@ -294,7 +294,7 @@
 				<div class="fade-in-up" style="max-width: 680px;">
 					<div style="display: inline-flex; align-items: center; gap: 8px; margin-bottom: 24px; border: 1px solid var(--color-border); padding: 6px 16px; border-radius: 20px; background: rgba(255, 255, 255, 0.6);">
 						<span style="display: inline-block; width: 6px; height: 6px; background: var(--color-primary); border-radius: 50%;"></span>
-						<span style="font-family: var(--font-body); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--color-neutral); font-weight: 500;">Consultas 100% online</span>
+						<span style="font-family: var(--font-body); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--color-neutral); font-weight: 500;">Presencial previa cita & consultas online</span>
 					</div>
 					<h1 style="font-size: clamp(38px, 5.5vw, 64px); color: var(--color-secondary); line-height: 1.1; margin-bottom: 24px; font-style: italic;">
 						"Sin justicia, no hay libertad"
@@ -731,7 +731,7 @@
 					</div>
 
 					<div class="fade-in-up-delay-1" style="background: #f1efe9; border: 1px solid var(--color-border); padding: 42px 36px; border-radius: 4px;">
-						<form onsubmit="event.preventDefault(); alert('Gracias por su mensaje. Le contactaremos pronto.');">
+						<form id="contactForm">
 							<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px;">
 								<div style="display: flex; flex-direction: column; gap: 6px;">
 									<label for="nombre" style="font-family: var(--font-body); font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-secondary); font-weight: 500;">Nombre completo</label>
@@ -755,6 +755,21 @@
 
 							<button type="submit" class="btn-primary" style="width: 100%;">Enviar consulta</button>
 						</form>
+						<script is:inline>
+							document.getElementById('contactForm')?.addEventListener('submit', function(event) {
+								event.preventDefault();
+								const nombre = document.getElementById('nombre').value;
+								const email = document.getElementById('email').value;
+								const telefono = document.getElementById('telefono').value;
+								const mensaje = document.getElementById('mensaje').value;
+								
+								const subject = encodeURIComponent(`Consulta legal de ${nombre}`);
+								const body = encodeURIComponent(`Nombre: ${nombre}\nEmail: ${email}\nTeléfono: ${telefono}\nMensaje:\n${mensaje}`);
+								
+								window.location.href = `mailto:aliciagomezabogada@outlook.com?subject=${subject}&body=${body}`;
+							});
+						</script>
+
 					</div>
 				</div>
 			</div>
