@@ -43,7 +43,7 @@ const CTABlock: FC<CTAProps> = ({
   const t = themes[theme] || themes.primary
 
   return (
-    <section className={`py-20 px-6 relative overflow-hidden ${t.section}`}>
+    <section className={`py-10 md:py-20 px-6 relative overflow-hidden ${t.section}`}>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-10 bg-white blur-[120px]" />
 
       <div className="relative z-10 max-w-3xl mx-auto text-center">

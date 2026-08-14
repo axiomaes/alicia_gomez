@@ -15,7 +15,7 @@ interface StatsProps {
 
 const StatsBlock: FC<StatsProps> = ({ title, subtitle, items }) => {
   return (
-    <section className="py-16 px-6 bg-primary text-white relative overflow-hidden">
+    <section className="py-10 md:py-16 px-6 bg-primary text-white relative overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] rounded-full bg-white/5 blur-[80px]" />
 
       <div className="relative z-10 max-w-7xl mx-auto">

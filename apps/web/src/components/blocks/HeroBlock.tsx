@@ -55,7 +55,7 @@ const HeroBlock: FC<HeroProps> = (props) => {
 
   return (
     <section
-      className={`relative min-h-[70vh] flex flex-col justify-center py-24 px-6 overflow-hidden ${bgClass} ${design.classes}`}
+      className={`relative min-h-[70vh] flex flex-col justify-center py-12 md:py-12 md:py-24 px-6 overflow-hidden ${bgClass} ${design.classes}`}
       style={sectionStyle}
     >
       {theme === 'image' && <div className="absolute inset-0 bg-black/60" />}
@@ -80,7 +80,7 @@ const HeroBlock: FC<HeroProps> = (props) => {
         )}
 
         <div 
-          className="text-4xl md:text-6xl font-bold leading-tight mb-6 max-w-4xl [&_p]:m-0 [&_h1]:m-0 [&_h2]:m-0 [&_h1]:text-inherit [&_h2]:text-inherit [&_strong]:text-accent"
+          className="text-3xl sm:text-4xl md:text-6xl font-bold leading-tight mb-6 max-w-4xl [&_p]:m-0 [&_h1]:m-0 [&_h2]:m-0 [&_h1]:text-inherit [&_h2]:text-inherit [&_strong]:text-accent"
           dangerouslySetInnerHTML={{ __html: title }}
         />
 
@@ -94,11 +94,11 @@ const HeroBlock: FC<HeroProps> = (props) => {
         )}
 
         {(ctaLabel || ctaSecondaryLabel) && (
-          <div className="flex flex-wrap gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto mt-4">
             {ctaLabel && ctaLink && (
               <a
                 href={ctaLink}
-                className="bg-accent text-white px-8 py-4 rounded-2xl font-bold hover:scale-105 transition-all shadow-xl"
+                className="bg-accent text-white px-8 py-4 rounded-2xl font-bold hover:scale-105 transition-all shadow-xl text-center w-full sm:w-auto"
               >
                 {ctaLabel}
               </a>
@@ -106,7 +106,7 @@ const HeroBlock: FC<HeroProps> = (props) => {
             {ctaSecondaryLabel && ctaSecondaryLink && (
               <a
                 href={ctaSecondaryLink}
-                className={`px-8 py-4 rounded-2xl font-bold border-2 transition-all hover:scale-105 ${
+                className={`px-8 py-4 rounded-2xl font-bold border-2 transition-all hover:scale-105 text-center w-full sm:w-auto ${
                   isDark
                     ? 'border-white/30 text-white hover:border-white hover:bg-white/10'
                     : 'border-primary text-primary hover:bg-primary hover:text-white'

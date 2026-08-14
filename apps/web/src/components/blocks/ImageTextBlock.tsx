@@ -28,7 +28,7 @@ const ImageTextBlock: FC<ImageTextProps> = ({
   const isLeft = imagePosition === 'left'
 
   return (
-    <section className="py-16 px-6">
+    <section className="py-10 md:py-16 px-6">
       <div className="max-w-7xl mx-auto">
         <div className={`grid md:grid-cols-2 gap-12 items-center ${isLeft ? '' : 'md:[&>*:first-child]:order-2'}`}>
           {/* Image */}

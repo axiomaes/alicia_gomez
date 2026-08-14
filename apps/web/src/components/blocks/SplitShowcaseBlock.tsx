@@ -28,7 +28,7 @@ const SplitShowcaseBlock: FC<SplitShowcaseProps> = (props) => {
   const isRight = image_position === 'right'
 
   return (
-    <section className={`py-24 px-6 overflow-hidden ${design.classes}`} style={design.styles}>
+    <section className={`py-12 md:py-24 px-6 overflow-hidden ${design.classes}`} style={design.styles}>
       <div className="max-w-7xl mx-auto">
         <div className={`flex flex-col lg:flex-row gap-16 ${isRight ? 'lg:flex-row-reverse' : ''}`}>
           

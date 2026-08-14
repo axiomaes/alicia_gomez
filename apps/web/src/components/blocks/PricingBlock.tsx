@@ -24,7 +24,7 @@ const PricingBlock: FC<PricingProps> = (props) => {
   const design = parseDesign(props)
 
   return (
-    <section className={`py-24 px-6 ${design.classes}`} style={design.styles}>
+    <section className={`py-12 md:py-24 px-6 ${design.classes}`} style={design.styles}>
       <div className="max-w-7xl mx-auto">
         {(title || subtitle) && (
           <div className="text-center mb-16 max-w-3xl mx-auto">

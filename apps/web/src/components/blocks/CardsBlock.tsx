@@ -24,7 +24,7 @@ const colsClass: Record<string, string> = {
 
 const CardsBlock: FC<CardsProps> = ({ title, subtitle, columns = '3', items }) => {
   return (
-    <section className="py-16 px-6 bg-gray-50">
+    <section className="py-10 md:py-16 px-6 bg-gray-50">
       <div className="max-w-7xl mx-auto">
         {(title || subtitle) && (
           <div className="text-center mb-12 max-w-2xl mx-auto">

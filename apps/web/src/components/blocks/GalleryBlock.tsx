@@ -23,7 +23,7 @@ const GalleryBlock: FC<GalleryProps> = (props) => {
     : 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'
 
   return (
-    <section className={`py-24 px-6 ${design.classes}`} style={design.styles}>
+    <section className={`py-12 md:py-24 px-6 ${design.classes}`} style={design.styles}>
       <div className="max-w-7xl mx-auto">
         {(title || subtitle) && (
           <div className="text-center mb-16 max-w-3xl mx-auto">

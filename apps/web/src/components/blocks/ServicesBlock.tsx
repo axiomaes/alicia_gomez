@@ -41,7 +41,7 @@ const itemVariant = {
 
 const ServicesBlock: FC<ServicesProps> = ({ title, subtitle, items }) => {
   return (
-    <section className="py-24 px-6 bg-slate-50/50">
+    <section className="py-12 md:py-24 px-6 bg-slate-50/50">
       <div className="max-w-7xl mx-auto">
         {(title || subtitle) && (
           <motion.div 
