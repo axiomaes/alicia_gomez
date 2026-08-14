@@ -113,34 +113,34 @@ const dynamicLinks = (pagesData || []).map((p: any) => ({
       <Menu class="size-6" id="icon-menu" />
     </button>
   </div>
+</nav>
 
-  <!-- Mobile Menu Sidebar -->
-  <div class="fixed inset-0 bg-slate-900/95 z-[110] translate-x-full transition-transform duration-500 lg:hidden" id="mobile-menu">
-    <div class="flex flex-col h-full p-6">
-      <div class="flex justify-between items-center mb-16">
-        <div class="flex gap-4">
-           <a href={lang === 'es' ? '#' : otherLangPath} class={`text-lg font-bold ${lang === 'es' ? "text-accent" : "text-white/50"}`}>ES</a>
-           <a href={lang === 'ca' ? '#' : otherLangPath} class={`text-lg font-bold ${lang === 'ca' ? "text-accent" : "text-white/50"}`}>CA</a>
-        </div>
-        <button class="text-white" id="menu-close">
-          <X class="size-8" />
-        </button>
+<!-- Mobile Menu Sidebar -->
+<div class="fixed inset-0 bg-slate-900/95 z-[110] translate-x-full transition-transform duration-500 lg:hidden" id="mobile-menu">
+  <div class="flex flex-col h-full p-6">
+    <div class="flex justify-between items-center mb-16">
+      <div class="flex gap-4">
+         <a href={lang === 'es' ? '#' : otherLangPath} class={`text-lg font-bold ${lang === 'es' ? "text-accent" : "text-white/50"}`}>ES</a>
+         <a href={lang === 'ca' ? '#' : otherLangPath} class={`text-lg font-bold ${lang === 'ca' ? "text-accent" : "text-white/50"}`}>CA</a>
       </div>
-      <div class="flex flex-col items-center gap-8 text-xl font-bold text-white uppercase tracking-wider text-center">
-        <a href={links.home} class="hover:text-accent transition">{t.home}</a>
-        <a href={links.sobreMi} class="hover:text-accent transition">{t.sobreMi}</a>
-        <a href={links.porQue} class="hover:text-accent transition">{t.porQue}</a>
-        <a href={links.servicios} class="hover:text-accent transition">{t.servicios}</a>
-        <a href={links.testimonios} class="hover:text-accent transition">{t.testimonios}</a>
-        <a href={links.blog} class="hover:text-accent transition">{t.blog}</a>
-        {dynamicLinks.map((link: any) => (
-          <a href={link.url} class="hover:text-accent transition">{link.title}</a>
-        ))}
-        <a href={links.cont} class="hover:text-accent transition text-accent">{t.cont}</a>
-      </div>
+      <button class="text-white" id="menu-close">
+        <X class="size-8" />
+      </button>
+    </div>
+    <div class="flex flex-col items-center gap-8 text-xl font-bold text-white uppercase tracking-wider text-center">
+      <a href={links.home} class="hover:text-accent transition">{t.home}</a>
+      <a href={links.sobreMi} class="hover:text-accent transition">{t.sobreMi}</a>
+      <a href={links.porQue} class="hover:text-accent transition">{t.porQue}</a>
+      <a href={links.servicios} class="hover:text-accent transition">{t.servicios}</a>
+      <a href={links.testimonios} class="hover:text-accent transition">{t.testimonios}</a>
+      <a href={links.blog} class="hover:text-accent transition">{t.blog}</a>
+      {dynamicLinks.map((link: any) => (
+        <a href={link.url} class="hover:text-accent transition">{link.title}</a>
+      ))}
+      <a href={links.cont} class="hover:text-accent transition text-accent">{t.cont}</a>
     </div>
   </div>
-</nav>
+</div>
 
 <script>
   const nav = document.getElementById('main-nav');
