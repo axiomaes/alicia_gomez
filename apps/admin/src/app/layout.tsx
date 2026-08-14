@@ -8,7 +8,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Axioma CMS",
+  title: "Axioma Starter",
   description: "Panel de Administración",
 };
 

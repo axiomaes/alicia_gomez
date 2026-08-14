@@ -43,7 +43,7 @@ export default async function DashboardOverview() {
     <div className="space-y-10">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-white">Resumen</h1>
-        <p className="text-zinc-400 mt-2">Bienvenido a tu panel de Axioma CMS.</p>
+        <p className="text-zinc-400 mt-2">Bienvenido a tu panel de Axioma Starter.</p>
       </div>
 
       <div>

@@ -5,7 +5,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-zinc-950 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]">
       <div className="w-full max-w-md p-8 rounded-2xl bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 shadow-2xl">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-zinc-100 tracking-tight">Axioma CMS</h1>
+          <h1 className="text-3xl font-bold text-zinc-100 tracking-tight">Axioma Starter</h1>
           <p className="text-zinc-400 mt-2 text-sm">Inicia sesión para administrar el sitio</p>
         </div>
 

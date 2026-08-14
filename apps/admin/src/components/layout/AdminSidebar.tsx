@@ -25,8 +25,8 @@ export function AdminSidebar() {
           <div className="min-w-8 min-h-8 w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shrink-0">
             <span className="font-bold text-lg">A</span>
           </div>
-          <span className={`text-xl font-bold tracking-tight text-zinc-900 dark:text-white transition-opacity duration-300 ${isCollapsed ? 'opacity-0 w-0' : 'opacity-100'}`}>
-            Axioma CMS
+          <span className={`text-base font-bold tracking-tight text-zinc-900 dark:text-white transition-opacity duration-300 ${isCollapsed ? 'opacity-0 w-0' : 'opacity-100'}`}>
+            Axioma Starter
           </span>
         </Link>
       </div>
