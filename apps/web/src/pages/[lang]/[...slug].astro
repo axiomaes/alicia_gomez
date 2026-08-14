@@ -86,7 +86,12 @@ const whatsappUrl = whatsappDigits ? `https://wa.me/${whatsappDigits}` : undefin
         <RichTextBlock content={c['home.about.text'] || ''} alignment="left" />
       </div>
 
-      <div id="por-que-elegirme">
+      {/* FeaturesBlock trae un -mt-16 pensado para solaparse con una imagen de
+          hero grande justo encima; aquí va detrás de un bloque de texto corto
+          ("Sobre mí"), así que ese solape se veía como las tarjetas encima del
+          texto. pt-16 lo neutraliza solo en este sitio, sin tocar el componente
+          (que sí lo necesita tal cual en la Home genérica de la plantilla). */}
+      <div id="por-que-elegirme" class="pt-16">
         <FeaturesBlock
           features={[
             { title: c['home.feat1.title'] || '', description: c['home.feat1.desc'] || '', icon: c['home.feat1.icon'] || 'Clock' },
