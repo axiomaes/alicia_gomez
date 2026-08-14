@@ -1,0 +1,211 @@
+---
+export const prerender = false
+
+// Sitio de una sola página (así era el diseño original: Inicio → Sobre mí →
+// Por qué elegirme → Servicios → Testimonios → Contacto, todo por ancla).
+// A diferencia del starter genérico, aquí NO hay fichas de servicio ni página
+// de contacto separadas — solo Home. Si en el futuro Alicia quiere una página
+// aparte (p. ej. un caso de éxito), se añade desde el Constructor de Páginas
+// del panel sin tocar este archivo.
+
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import HeroBlock from '../../components/blocks/HeroBlock'
+import FeaturesBlock from '../../components/blocks/FeaturesBlock'
+import CardsBlock from '../../components/blocks/CardsBlock'
+import TestimonialsBlock from '../../components/blocks/TestimonialsBlock'
+import ContactInfoBlock from '../../components/blocks/ContactInfoBlock'
+import ContactFormBlock from '../../components/blocks/ContactFormBlock'
+import RichTextBlock from '../../components/blocks/RichTextBlock'
+import { getContent } from '../../lib/supabase'
+import { createClient } from '@supabase/supabase-js'
+
+const { lang, slug } = Astro.params
+
+const supabase = createClient(
+  import.meta.env.PUBLIC_SUPABASE_URL,
+  import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+)
+
+const validLangs = ['es', 'ca', 'en']
+if (!lang || !validLangs.includes(lang)) {
+  return Astro.redirect('/404')
+}
+
+const c = await getContent(lang)
+
+// Solo la home es una ruta "fija" — cualquier otra debe venir del Constructor
+// de Páginas (tabla `pages`), igual que en el starter genérico.
+const validSlugs: (string | undefined)[] = [undefined]
+
+let dynamicPageTitle = null;
+let dynamicPageDesc = null;
+let dynamicBlocks = null;
+
+if (slug !== undefined && !validSlugs.includes(slug)) {
+  const { data: pages } = await supabase
+    .from('pages')
+    .select('*')
+    .eq('is_published', true);
+
+  const matchedPage = pages?.find((p: any) => p.slug && p.slug[lang] === slug);
+  if (matchedPage) {
+    dynamicPageTitle = matchedPage.title[lang];
+    dynamicPageDesc = matchedPage.meta_description?.[lang] || '';
+    dynamicBlocks = matchedPage.content?.[lang] || [];
+  } else {
+    return Astro.redirect('/404')
+  }
+}
+
+const pageTitle = c['seo_home_title'] || c['company.name'] || 'Alicia Gómez Cuéllar'
+const pageDesc = c['seo_home_desc'] || ''
+const finalTitle = dynamicPageTitle || pageTitle;
+const finalDesc = dynamicPageDesc || pageDesc;
+
+const whatsappDigits = (c['company.phone'] || '').replace(/[^0-9+]/g, '').replace(/^\+/, '')
+const whatsappUrl = whatsappDigits ? `https://wa.me/${whatsappDigits}` : undefined
+---
+
+<BaseLayout title={`${finalTitle}`} description={finalDesc} lang={lang as 'es' | 'ca'}>
+
+  {(slug === undefined) && (
+    <>
+      <HeroBlock
+        badge={c['home.hero.badge'] || 'Presencial previa cita & consultas online'}
+        title={c['home.hero.title'] || '&ldquo;Sin justicia, no hay libertad&rdquo;'}
+        subtitle={c['home.hero.subtitle'] || 'Asesoramiento legal honesto, valiente y comprometido.'}
+        ctaLabel={c['home.hero.cta'] || 'Mensaje por WhatsApp'}
+        ctaLink={whatsappUrl || '#contacto'}
+        ctaSecondaryLabel={c['home.hero.cta2'] || 'Nuestros servicios'}
+        ctaSecondaryLink="#servicios"
+        theme="image"
+        backgroundImage={{ url: c['home.hero.image'] || '/hero.png' }}
+      />
+
+      <div id="sobre-mi">
+        <RichTextBlock content={c['home.about.text'] || ''} alignment="left" />
+      </div>
+
+      <div id="por-que-elegirme">
+        <FeaturesBlock
+          features={[
+            { title: c['home.feat1.title'] || '', description: c['home.feat1.desc'] || '', icon: c['home.feat1.icon'] || 'Clock' },
+            { title: c['home.feat2.title'] || '', description: c['home.feat2.desc'] || '', icon: c['home.feat2.icon'] || 'Bolt' },
+            { title: c['home.feat3.title'] || '', description: c['home.feat3.desc'] || '', icon: c['home.feat3.icon'] || 'Headset' },
+            { title: c['home.feat4.title'] || '', description: c['home.feat4.desc'] || '', icon: c['home.feat4.icon'] || 'ShieldCheck' },
+          ].filter(f => f.title)}
+          client:visible
+        />
+      </div>
+
+      <div id="servicios">
+        <CardsBlock
+          title={c['home.services.title'] || 'Servicios'}
+          subtitle={c['home.services.subtitle'] || ''}
+          columns="3"
+          items={[
+            { title: c['home.srv1.title'] || '', description: c['home.srv1.desc'] || '', icon: c['home.srv1.icon'] || 'Gavel' },
+            { title: c['home.srv2.title'] || '', description: c['home.srv2.desc'] || '', icon: c['home.srv2.icon'] || 'BuildingBank' },
+            { title: c['home.srv3.title'] || '', description: c['home.srv3.desc'] || '', icon: c['home.srv3.icon'] || 'DeviceLaptop' },
+            { title: c['home.srv4.title'] || '', description: c['home.srv4.desc'] || '', icon: c['home.srv4.icon'] || 'Language' },
+            { title: c['home.srv5.title'] || '', description: c['home.srv5.desc'] || '', icon: c['home.srv5.icon'] || 'Brain' },
+            { title: c['home.srv6.title'] || '', description: c['home.srv6.desc'] || '', icon: c['home.srv6.icon'] || 'Briefcase' },
+          ].filter(s => s.title)}
+        />
+      </div>
+
+      <div id="testimonios">
+        <TestimonialsBlock
+          title={c['home.testimonials.title'] || 'Testimonios reales'}
+          subtitle={c['home.testimonials.subtitle'] || ''}
+          testimonials={[
+            { quote: c['testi1.quote'] || '', author: c['testi1.author'] || '' },
+            { quote: c['testi2.quote'] || '', author: c['testi2.author'] || '' },
+            { quote: c['testi3.quote'] || '', author: c['testi3.author'] || '' },
+            { quote: c['testi4.quote'] || '', author: c['testi4.author'] || '' },
+          ].filter(t => t.quote && t.author)}
+        />
+      </div>
+
+      <div id="contacto">
+        <ContactInfoBlock
+          title={c['contact.hero.title'] || 'Iniciemos tu consulta'}
+          subtitle={c['contact.hero.subtitle'] || ''}
+          items={[
+            c['footer.hours'] && { icon: 'Clock', label: c['footer.hours'], value: c['footer.days'] || '' },
+            c['company.email'] && { icon: 'Mail', label: 'Correo electrónico', value: c['company.email'] },
+            c['company.linkedin'] && { icon: 'BrandLinkedin', label: 'LinkedIn', value: 'Ver perfil profesional' },
+          ].filter(Boolean) as any}
+        />
+        <ContactFormBlock
+          title={c['contact.form.title'] || 'Envíanos un mensaje'}
+          subtitle={c['contact.form.subtitle'] || ''}
+          formId="contacto"
+          client:load
+        />
+      </div>
+    </>
+  )}
+
+  {dynamicBlocks && dynamicBlocks.length > 0 && (
+    <div class="space-y-16 py-12">
+      {dynamicBlocks.map((block: any) => {
+        if (block.type === 'text' && block.data.text) {
+          return (
+            <div class="max-w-4xl mx-auto px-6">
+              <div class="prose prose-slate max-w-none prose-lg">
+                <p>{block.data.text}</p>
+              </div>
+            </div>
+          )
+        }
+
+        if (block.type === 'image_text' && (block.data.imageUrl || block.data.text)) {
+          return (
+            <div class="max-w-5xl mx-auto px-6">
+              <div class="grid md:grid-cols-2 gap-8 items-center bg-slate-50 p-6 md:p-12 rounded-3xl">
+                {block.data.imageUrl && (
+                  <img src={block.data.imageUrl} alt={block.data.text || ''} class="rounded-2xl w-full object-cover shadow-sm aspect-video md:aspect-square" />
+                )}
+                {block.data.text && (
+                  <div class="prose prose-slate prose-lg">
+                    <p>{block.data.text}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )
+        }
+
+        if (block.type === 'gallery') {
+          return <div class="max-w-5xl mx-auto px-6 text-center italic text-slate-400 py-12">Galería (Próximamente)</div>
+        }
+
+        if (block.type === 'contact') {
+          return (
+            <div class="max-w-xl mx-auto px-6">
+              <ContactFormBlock
+                title={block.data.title || 'Contacto'}
+                formId={`pagina-${block.data.title || 'contacto'}`}
+                client:load
+              />
+            </div>
+          )
+        }
+
+        if (block.type === 'pricing' && block.data.pricingData) {
+          return (
+            <div class="max-w-4xl mx-auto px-6">
+              <div class="prose prose-slate max-w-none text-center bg-indigo-50 p-8 md:p-12 rounded-3xl">
+                <pre class="font-sans whitespace-pre-wrap text-lg bg-transparent border-0">{block.data.pricingData}</pre>
+              </div>
+            </div>
+          )
+        }
+
+        return null;
+      })}
+    </div>
+  )}
+
+</BaseLayout>

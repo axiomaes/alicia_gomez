@@ -1,0 +1,49 @@
+---
+import { Star, Quote } from '@lucide/astro';
+
+const testimonials = [
+  {
+    name: "Carlos Rodríguez",
+    role: "Propiedad Residencial",
+    text: "Rapidez increíble. Mi caldera dejó de funcionar un domingo y en menos de 3 horas ya estaba reparada. Un servicio técnico de confianza en España.",
+    stars: 5
+  },
+  {
+    name: "Elena Martínez",
+    role: "Negocio Local",
+    text: "Instalación impecable de aire acondicionado en mi tienda. Limpios, profesionales y el equipo funciona de maravilla. Los recomiendo 100%.",
+    stars: 5
+  },
+  {
+    name: "Andrés García",
+    role: "Gerente de Restaurante",
+    text: "Montaje profesional de cámara frigorífica. Se nota la experiencia en frío industrial. Cumplieron con los plazos y la calidad es excelente.",
+    stars: 5
+  }
+];
+---
+
+<section id="testimonios" class="py-24 px-6 relative overflow-hidden">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-5xl font-bold text-primary mb-4">Lo que dicen nuestros clientes</h2>
+      <div class="w-24 h-1 bg-accent mx-auto"></div>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8">
+      {testimonials.map((t) => (
+        <div class="relative group p-8 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 shadow-xl hover:translate-y-[-10px] transition-all duration-500">
+          <Quote class="absolute top-4 right-6 size-12 text-primary/10 group-hover:text-accent/20 transition-colors" />
+          <div class="flex gap-1 mb-4 text-accent">
+            {[...Array(t.stars)].map(() => <Star class="size-4 fill-current" />)}
+          </div>
+          <p class="text-slate-700 italic mb-6 leading-relaxed">"{t.text}"</p>
+          <div>
+            <p class="font-bold text-primary">{t.name}</p>
+            <p class="text-sm text-slate-500">{t.role}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

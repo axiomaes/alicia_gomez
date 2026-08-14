@@ -1,0 +1,163 @@
+---
+import { Menu, X, Globe } from '@lucide/astro';
+import type { ResolvedTheme } from '../lib/theme';
+
+interface Props {
+  lang: 'es' | 'ca';
+  theme?: ResolvedTheme;
+}
+
+const { lang, theme } = Astro.props;
+const logoUrl = theme?.logoUrl ?? '/logos/logo_alicia_gomez.svg';
+const tenantName = theme?.tenantName ?? 'Alicia Gómez Cuéllar';
+
+// Sitio de una sola página: la navegación es por anclas de sección, no por
+// rutas. Se prefija con /${lang}/ para que el enlace funcione igual estando
+// en la home o en cualquier página adicional que se cree desde el panel.
+const base = `/${lang}/`;
+
+const translations: Record<'es' | 'ca', { home: string; sobreMi: string; porQue: string; servicios: string; testimonios: string; cont: string; brand: string }> = {
+  es: {
+    home: "Inicio", sobreMi: "Sobre mí", porQue: "Por qué elegirme",
+    servicios: "Servicios", testimonios: "Testimonios", cont: "Contacto",
+    brand: "ABOGADA · ICAM 140626",
+  },
+  ca: {
+    home: "Inici", sobreMi: "Sobre mi", porQue: "Per què triar-me",
+    servicios: "Serveis", testimonios: "Testimonis", cont: "Contacte",
+    brand: "ADVOCADA · ICAM 140626",
+  }
+};
+
+const t = translations[lang as 'es' | 'ca'];
+const links = {
+  home: base,
+  sobreMi: `${base}#sobre-mi`,
+  porQue: `${base}#por-que-elegirme`,
+  servicios: `${base}#servicios`,
+  testimonios: `${base}#testimonios`,
+  cont: `${base}#contacto`,
+};
+
+// Logic to find current path equivalent in other language
+const currentPath = Astro.url.pathname;
+const otherLang = lang === 'es' ? 'ca' : 'es';
+const otherLangPath = `/${otherLang}/${currentPath.split('#')[1] ? '#' + currentPath.split('#')[1] : ''}`;
+
+// Fetch dynamic pages
+import { createClient } from '@supabase/supabase-js';
+const supabase = createClient(
+  import.meta.env.PUBLIC_SUPABASE_URL,
+  import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+);
+
+const { data: pagesData } = await supabase
+  .from('pages')
+  .select('slug, title')
+  .eq('is_published', true)
+  .order('menu_order', { ascending: true });
+
+const dynamicLinks = (pagesData || []).map((p: any) => ({
+  title: p.title[lang],
+  url: `/${lang}/${p.slug[lang]}`
+}));
+---
+
+<nav class="fixed top-0 left-0 w-full z-[100] px-6 py-4 flex justify-between items-center backdrop-blur-md bg-white/70 border-b border-white/20 transition-all duration-300" id="main-nav">
+  <div class="flex items-center gap-4">
+    <a href={links.home} class="flex items-center gap-3 hover:scale-105 transition group">
+      <img src={logoUrl} alt={`Logo ${tenantName}`} class="h-10 w-auto" />
+      <div class="flex flex-col leading-none">
+        <span class="text-primary font-bold text-lg tracking-tighter">{tenantName}</span>
+        <span class="text-accent text-[10px] font-bold uppercase tracking-widest leading-none group-hover:tracking-[0.2em] transition-all">{t.brand}</span>
+      </div>
+    </a>
+  </div>
+
+  <!-- Desktop Menu -->
+  <div class="hidden lg:flex items-center gap-8">
+    <div class="flex gap-8 text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+      <a href={links.home} class="hover:text-accent transition">{t.home}</a>
+      <a href={links.sobreMi} class="hover:text-accent transition">{t.sobreMi}</a>
+      <a href={links.porQue} class="hover:text-accent transition">{t.porQue}</a>
+      <a href={links.servicios} class="hover:text-accent transition">{t.servicios}</a>
+      <a href={links.testimonios} class="hover:text-accent transition">{t.testimonios}</a>
+      {dynamicLinks.map((link: any) => (
+        <a href={link.url} class="hover:text-accent transition">{link.title}</a>
+      ))}
+      <a href={links.cont} class="hover:text-accent transition">{t.cont}</a>
+    </div>
+
+    <!-- Language Switcher -->
+    <div class="flex items-center gap-2 ml-4 border-l border-slate-200 pl-6 h-6">
+      <Globe class="size-4 text-slate-400" />
+      <div class="flex gap-2 text-[10px] font-bold">
+        <a href={lang === 'es' ? '#' : otherLangPath} class={lang === 'es' ? "text-accent" : "text-slate-400 hover:text-primary"}>ES</a>
+        <span class="text-slate-200">|</span>
+        <a href={lang === 'ca' ? '#' : otherLangPath} class={lang === 'ca' ? "text-accent" : "text-slate-400 hover:text-primary"}>CA</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu Button -->
+  <div class="flex items-center gap-4 lg:hidden">
+    <a href={otherLangPath} class="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1">
+      <Globe class="size-3" />
+      {otherLang}
+    </a>
+    <button class="text-primary" id="menu-toggle" aria-label="Abrir menú">
+      <Menu class="size-6" id="icon-menu" />
+    </button>
+  </div>
+
+  <!-- Mobile Menu Sidebar -->
+  <div class="fixed inset-0 bg-slate-900/95 z-[110] translate-x-full transition-transform duration-500 lg:hidden" id="mobile-menu">
+    <div class="flex flex-col h-full p-10">
+      <div class="flex justify-between items-center mb-16">
+        <div class="flex gap-4">
+           <a href={lang === 'es' ? '#' : otherLangPath} class={`text-lg font-bold ${lang === 'es' ? "text-accent" : "text-white/50"}`}>ES</a>
+           <a href={lang === 'ca' ? '#' : otherLangPath} class={`text-lg font-bold ${lang === 'ca' ? "text-accent" : "text-white/50"}`}>CA</a>
+        </div>
+        <button class="text-white" id="menu-close">
+          <X class="size-8" />
+        </button>
+      </div>
+      <div class="flex flex-col gap-8 text-2xl font-bold text-white uppercase tracking-wider">
+        <a href={links.home} class="hover:text-accent transition">{t.home}</a>
+        <a href={links.sobreMi} class="hover:text-accent transition">{t.sobreMi}</a>
+        <a href={links.porQue} class="hover:text-accent transition">{t.porQue}</a>
+        <a href={links.servicios} class="hover:text-accent transition">{t.servicios}</a>
+        <a href={links.testimonios} class="hover:text-accent transition">{t.testimonios}</a>
+        {dynamicLinks.map((link: any) => (
+          <a href={link.url} class="hover:text-accent transition">{link.title}</a>
+        ))}
+        <a href={links.cont} class="hover:text-accent transition text-accent">{t.cont}</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  const nav = document.getElementById('main-nav');
+  const toggle = document.getElementById('menu-toggle');
+  const close = document.getElementById('menu-close');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  toggle?.addEventListener('click', () => {
+    mobileMenu?.classList.remove('translate-x-full');
+  });
+
+  close?.addEventListener('click', () => {
+    mobileMenu?.classList.add('translate-x-full');
+  });
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+      nav?.classList.add('bg-white/95', 'py-3', 'shadow-sm');
+      nav?.classList.remove('bg-white/70', 'py-4');
+    } else {
+      nav?.classList.remove('bg-white/95', 'py-3', 'shadow-sm');
+      nav?.classList.add('bg-white/70', 'py-4');
+    }
+  });
+</script>

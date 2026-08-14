@@ -1,0 +1,60 @@
+---
+import '../styles/global.css';
+import Navigation from '../components/Navigation.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppButton from '../components/WhatsAppButton.astro';
+import { resolveTheme } from '../lib/theme';
+import { getTenantSettings, getContent } from '../lib/supabase';
+
+interface Props {
+	title: string;
+	description?: string;
+	lang: 'es' | 'ca';
+}
+
+const { title, description = "Asesoramiento legal honesto, valiente y comprometido. Derecho Civil y Administrativo, 100% online.", lang } = Astro.props;
+
+const tenantDoc = await getTenantSettings();
+const theme = resolveTheme(tenantDoc);
+const dictionary = await getContent(lang);
+---
+
+<!doctype html>
+<html lang={lang}>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content={description} />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href={theme.faviconUrl} />
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href={theme.fontHref} rel="stylesheet">
+		<style is:inline set:html={`:root{--color-primary:${theme.primaryRgb};--color-primary-hex:${theme.primaryHex};--color-accent:${theme.accentRgb};--color-accent-hex:${theme.accentHex};--font-sans:${theme.fontCssStack};}`}></style>
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "LocalBusiness",
+				"name": dictionary['company.name'] || theme.tenantName,
+				"description": description,
+				"address": {
+					"@type": "PostalAddress",
+					"streetAddress": dictionary['company.address'] || "Calle Principal",
+					"addressLocality": dictionary['company.city'] || "Ciudad",
+					"addressCountry": "ES"
+				},
+				"telephone": dictionary['company.phone'] || "+34000000000",
+				"url": Astro.url.origin,
+				"image": new URL(theme.logoUrl, Astro.url.origin).toString(),
+				"priceRange": "$$"
+			}
+		</script>
+	</head>
+	<body class="bg-white text-gray-900 font-sans antialiased min-h-screen pt-16">
+		<Navigation lang={lang} theme={theme} />
+		<slot />
+		<Footer lang={lang} theme={theme} />
+		<WhatsAppButton phone={dictionary['company.phone']} lang={lang} />
+	</body>
+</html>

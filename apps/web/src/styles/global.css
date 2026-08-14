@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Identidad de marca de Alicia Gómez: titulares en Cormorant Garamond (serif),
+   cuerpo de texto en Jost (--font-sans, cargado desde tenant_settings.font_family).
+   Si esta instancia deja de ser suya, quita este bloque y usa un único font_family
+   normal desde el panel. */
+h1, h2, h3, h4 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 500;
+}
