@@ -1,5 +1,4 @@
 ---
-import { Phone, Mail, MapPin } from '@lucide/astro';
 import { getContent } from '../lib/supabase';
 import type { ResolvedTheme } from '../lib/theme';
 
@@ -16,58 +15,44 @@ const tenantName = theme?.tenantName ?? 'Alicia Gómez Cuéllar';
 const c = content ?? await getContent(lang);
 ---
 
-<!-- Sin id="contacto" aquí a propósito: la ancla #contacto del nav apunta al
-     formulario real más arriba en la página (ver [...slug].astro), no al footer. -->
-<footer class="py-20 px-6 bg-slate-900 text-white relative overflow-hidden">
-  <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-16 relative z-10">
-    <div class="space-y-6">
-      <div class="flex items-center gap-3 brightness-200">
-        <img src={logoUrl} alt={tenantName} class="h-12 w-auto" />
-        <div class="flex flex-col leading-none">
-          <span class="text-white font-bold text-xl tracking-tighter">{tenantName}</span>
-          <span class="text-accent text-[10px] font-bold uppercase tracking-widest leading-none">{c['footer.brand'] || 'TU MARCA AQUÍ'}</span>
-        </div>
-      </div>
-      <p class="text-slate-400 text-sm leading-relaxed text-justify">
-        {c['footer.desc'] || 'Plantilla base de Axioma Starter para el despliegue rápido de sitios web corporativos con CMS integrado.'}
-      </p>
-      <div>
-        <p class="font-bold text-white mb-1">{c['company.name'] || 'Cliente Base S.L.'}</p>
-        <p class="text-slate-500 text-sm">{c['company.nif_label'] || 'NIF'}: {c['company.nif'] || 'B12345678'}</p>
+<!-- Diseño fiel al footer original de Alicia: una sola columna centrada
+     (logo, descripción, LinkedIn, línea, copyright) — no la plantilla
+     genérica de 3 columnas a la izquierda del starter, que es lo que
+     hacía que se viera "descentrado" en móvil. -->
+<footer class="py-16 px-6 bg-slate-900 text-white relative overflow-hidden">
+  <div class="max-w-lg mx-auto flex flex-col items-center text-center gap-6 relative z-10">
+    <div class="flex items-center gap-3">
+      <img src={logoUrl} alt={tenantName} class="h-10 w-auto" />
+      <div class="flex flex-col leading-none text-left">
+        <span class="text-white font-bold text-lg tracking-tighter">{tenantName}</span>
+        <span class="text-accent text-[10px] font-bold uppercase tracking-widest leading-none mt-1">{c['footer.brand'] || 'TU MARCA AQUÍ'}</span>
       </div>
     </div>
 
-    <div>
-      <h4 class="text-xl font-bold mb-8 flex items-center gap-2 text-white">
-        <span class="w-8 h-1 bg-accent"></span>
-        {c['footer.contact'] || 'Contacto'}
-      </h4>
-      <div class="space-y-4 text-slate-300">
-        <p class="flex items-center gap-3"><Phone class="size-5 text-accent" /> {c['company.phone'] || '+34 000 000 000'}</p>
-        <p class="flex items-center gap-3"><Mail class="size-5 text-accent" /> {c['company.email'] || 'info@tudominio.com'}</p>
-        <div class="pt-4">
-           <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">{c['footer.hours'] || 'Horario'}</p>
-           <p class="text-sm font-bold text-white uppercase tracking-tighter">{c['footer.days'] || 'Lunes a Viernes'}</p>
-        </div>
-      </div>
-    </div>
+    <p class="text-slate-400 text-sm leading-relaxed">
+      {c['footer.desc'] || 'Plantilla base de Axioma Starter para el despliegue rápido de sitios web corporativos con CMS integrado.'}
+    </p>
 
-    <div>
-      <h4 class="text-xl font-bold mb-8 flex items-center gap-2 text-white">
-        <span class="w-8 h-1 bg-accent"></span>
-        {c['footer.sede'] || 'Sede'}
-      </h4>
-      <div class="space-y-4 text-slate-300">
-        <p class="flex items-center gap-3"><MapPin class="size-5 text-accent" /> {c['company.address'] || 'Calle Falsa 123'}</p>
-        <p class="text-sm text-slate-500" set:html={(c['company.city'] || 'Barcelona').replace('\n', '<br/>')}></p>
-      </div>
-    </div>
-  </div>
-  
-  <div class="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-[100px] -z-0"></div>
-  <div class="absolute bottom-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-[100px] -z-0"></div>
-  
-  <div class="max-w-7xl mx-auto mt-20 pt-8 border-t border-white/5 text-center text-xs text-slate-500">
-    <p>&copy; {new Date().getFullYear()} {tenantName}. {c['footer.rights'] || 'Todos los derechos reservados.'} | <a href="#" class="hover:text-white transition">{c['footer.legal'] || 'Aviso Legal'}</a></p>
+    {c['company.linkedin'] && (
+      <a
+        href={c['company.linkedin']}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="LinkedIn"
+        class="flex items-center justify-center w-9 h-9 rounded-full border border-white/15 text-accent hover:border-accent transition-colors"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="4" cy="4" r="2" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+      </a>
+    )}
+
+    <div class="w-10 h-px bg-white/10"></div>
+
+    <p class="text-xs text-slate-500">
+      &copy; {new Date().getFullYear()} {tenantName}. {c['company.nif_label'] || 'Nº colegiada'} {c['company.nif'] || ''}. {c['footer.rights'] || 'Todos los derechos reservados.'}
+      {c['footer.legal'] && <> · <a href="#" class="hover:text-white transition">{c['footer.legal']}</a></>}
+    </p>
   </div>
 </footer>
