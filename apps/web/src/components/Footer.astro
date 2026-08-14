@@ -6,13 +6,14 @@ import type { ResolvedTheme } from '../lib/theme';
 interface Props {
   lang: 'es' | 'ca';
   theme?: ResolvedTheme;
+  content?: Record<string, string>;
 }
 
-const { lang, theme } = Astro.props;
+const { lang, theme, content } = Astro.props;
 const logoUrl = theme?.logoUrl ?? '/logos/logo_alicia_gomez.svg';
 const tenantName = theme?.tenantName ?? 'Alicia Gómez Cuéllar';
 
-const c = await getContent(lang);
+const c = content ?? await getContent(lang);
 ---
 
 <!-- Sin id="contacto" aquí a propósito: la ancla #contacto del nav apunta al

@@ -10,13 +10,17 @@ interface Props {
 	title: string;
 	description?: string;
 	lang: 'es' | 'ca';
+	// Si la página que llama a BaseLayout ya ha pedido el diccionario de contenido,
+	// pásalo aquí para no volver a pedirlo — Navigation y Footer lo reciben de aquí
+	// en vez de hacer cada uno su propia llamada a Supabase.
+	content?: Record<string, string>;
 }
 
-const { title, description = "Asesoramiento legal honesto, valiente y comprometido. Derecho Civil y Administrativo, 100% online.", lang } = Astro.props;
+const { title, description = "Asesoramiento legal honesto, valiente y comprometido. Derecho Civil y Administrativo, 100% online.", lang, content } = Astro.props;
 
 const tenantDoc = await getTenantSettings();
 const theme = resolveTheme(tenantDoc);
-const dictionary = await getContent(lang);
+const dictionary = content ?? await getContent(lang);
 ---
 
 <!doctype html>
@@ -54,7 +58,7 @@ const dictionary = await getContent(lang);
 	<body class="bg-white text-gray-900 font-sans antialiased min-h-screen pt-16">
 		<Navigation lang={lang} theme={theme} />
 		<slot />
-		<Footer lang={lang} theme={theme} />
+		<Footer lang={lang} theme={theme} content={dictionary} />
 		<WhatsAppButton phone={dictionary['company.phone']} lang={lang} />
 	</body>
 </html>
