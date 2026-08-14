@@ -22,8 +22,8 @@ export function AdminSidebar() {
     >
       <div className="h-16 flex items-center px-4 border-b border-zinc-200 dark:border-zinc-800">
         <Link href="/dashboard" className="flex items-center gap-3 overflow-hidden whitespace-nowrap">
-          <div className="min-w-8 min-h-8 w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shrink-0">
-            <span className="font-bold text-lg">A</span>
+          <div className="min-w-8 min-h-8 w-8 h-8 flex items-center justify-center shrink-0">
+            <img src="/axioma_logo.svg" alt="Axioma Logo" className="w-full h-full object-contain" />
           </div>
           <span className={`text-base font-bold tracking-tight text-zinc-900 dark:text-white transition-opacity duration-300 ${isCollapsed ? 'opacity-0 w-0' : 'opacity-100'}`}>
             Axioma Starter
