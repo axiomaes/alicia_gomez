@@ -1,45 +1,46 @@
 ---
-import { supabase, getTenantSettings } from '../../lib/supabase';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { supabase } from '../../lib/supabase';
 
-// Fetch published blogs
 const { data: blogs } = await supabase
   .from('blogs')
   .select('*')
   .eq('is_published', true)
   .order('published_at', { ascending: false });
-
-const tenant = await getTenantSettings();
-const tenantName = tenant?.tenant_name || 'Cliente Base';
 ---
 
-<html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Blog - {tenantName}</title>
-  </head>
-  <body class="bg-zinc-50 text-zinc-900 antialiased font-sans max-w-4xl mx-auto p-8">
-    <header class="mb-12">
-      <h1 class="text-4xl font-bold tracking-tight">Nuestro Blog</h1>
-      <p class="text-zinc-500 mt-2">Novedades y artículos.</p>
-    </header>
+<BaseLayout
+  title="Blog | Alicia Gómez Cuéllar"
+  description="Artículos y novedades sobre Derecho Civil y Administrativo."
+  lang="es"
+>
+  <section class="py-32 px-6">
+    <div class="max-w-3xl mx-auto">
+      <header class="mb-16 text-center">
+        <span class="text-xs font-bold uppercase tracking-[2px] text-accent">Blog</span>
+        <h1 class="text-4xl md:text-5xl mt-3">Artículos y actualidad legal</h1>
+      </header>
 
-    <main class="space-y-8">
-      {blogs && blogs.map((blog) => (
-        <article class="border border-zinc-200 rounded-2xl p-6 hover:shadow-md transition-shadow bg-white">
-          <h2 class="text-2xl font-semibold mb-2">
-            <a href={`/blog/${blog.slug}`} class="text-indigo-600 hover:underline">{blog.title}</a>
-          </h2>
-          <time class="text-sm text-zinc-500 block mb-4">
-            {new Date(blog.published_at).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}
-          </time>
-          <p class="text-zinc-600">{blog.excerpt}</p>
-          <a href={`/blog/${blog.slug}`} class="inline-block mt-4 text-sm font-medium text-indigo-600 hover:text-indigo-800">Leer más &rarr;</a>
-        </article>
-      ))}
-      {(!blogs || blogs.length === 0) && (
-        <p class="text-zinc-500 text-center py-12">No hay artículos publicados todavía.</p>
-      )}
-    </main>
-  </body>
-</html>
+      <div class="space-y-6">
+        {blogs && blogs.length > 0 ? (
+          blogs.map((blog: any) => (
+            <article class="border border-primary/10 rounded-2xl p-8 bg-white hover:border-accent/50 hover:shadow-lg transition-all duration-300">
+              <h2 class="text-2xl mb-2">
+                <a href={`/blog/${blog.slug}`} class="hover:text-accent transition-colors">{blog.title}</a>
+              </h2>
+              <time class="text-sm text-slate-400 block mb-4">
+                {new Date(blog.published_at).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </time>
+              {blog.excerpt && <p class="text-slate-600 leading-relaxed">{blog.excerpt}</p>}
+              <a href={`/blog/${blog.slug}`} class="inline-flex items-center gap-1.5 mt-5 text-sm font-semibold text-accent hover:gap-2.5 transition-all">
+                Leer más <span aria-hidden="true">→</span>
+              </a>
+            </article>
+          ))
+        ) : (
+          <p class="text-center text-slate-400 py-16">Todavía no hay artículos publicados.</p>
+        )}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

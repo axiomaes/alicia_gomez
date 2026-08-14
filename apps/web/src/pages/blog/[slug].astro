@@ -1,13 +1,10 @@
 ---
-import { supabase, getTenantSettings } from '../../lib/supabase';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { supabase } from '../../lib/supabase';
 
-// If you are using SSG (Static Site Generation), you need getStaticPaths.
-// If you are using SSR (Server-Side Rendering, standard in Next.js but Astro needs output: 'server' in astro.config.mjs),
-// you can fetch directly without getStaticPaths. 
-// Assuming SSG for standard Astro if not specified:
 export async function getStaticPaths() {
   const { data: blogs } = await supabase.from('blogs').select('slug').eq('is_published', true);
-  return blogs?.map((blog) => ({
+  return blogs?.map((blog: any) => ({
     params: { slug: blog.slug },
   })) || [];
 }
@@ -22,32 +19,27 @@ const { data: blog } = await supabase
 if (!blog) {
   return Astro.redirect('/404');
 }
-
-const tenant = await getTenantSettings();
-const tenantName = tenant?.tenant_name || 'Cliente Base';
 ---
 
-<html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>{blog.title} - {tenantName}</title>
-  </head>
-  <body class="bg-zinc-50 text-zinc-900 antialiased font-sans max-w-3xl mx-auto p-8">
-    <nav class="mb-12">
-      <a href="/blog" class="text-indigo-600 hover:underline">&larr; Volver al blog</a>
-    </nav>
-    <article class="prose lg:prose-xl">
-      <h1 class="text-4xl font-bold tracking-tight mb-4">{blog.title}</h1>
-      <time class="text-sm text-zinc-500 block mb-8">
+<BaseLayout
+  title={`${blog.title} | Alicia Gómez Cuéllar`}
+  description={blog.excerpt || ''}
+  lang="es"
+>
+  <article class="py-32 px-6">
+    <div class="max-w-2xl mx-auto">
+      <a href="/blog" class="inline-flex items-center gap-1.5 text-sm font-semibold text-accent mb-10 hover:gap-2.5 transition-all">
+        <span aria-hidden="true">←</span> Volver al blog
+      </a>
+      <h1 class="text-4xl md:text-5xl mb-4">{blog.title}</h1>
+      <time class="text-sm text-slate-400 block mb-10">
         {new Date(blog.published_at).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}
       </time>
-      
-      {/* 
-        NOTA: En producción se recomienda procesar este contenido con una librería como `marked` si es Markdown 
-        o sanitizarlo si es HTML puro. 
-      */}
-      <div set:html={blog.content}></div>
-    </article>
-  </body>
-</html>
+
+      <div
+        class="prose prose-slate max-w-none prose-headings:font-normal prose-a:text-accent prose-strong:text-primary"
+        set:html={blog.content}
+      />
+    </div>
+  </article>
+</BaseLayout>
