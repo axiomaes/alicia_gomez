@@ -55,7 +55,7 @@ const HeroBlock: FC<HeroProps> = (props) => {
 
   return (
     <section
-      className={`relative min-h-[70vh] flex flex-col justify-center py-12 md:py-12 md:py-24 px-6 overflow-hidden ${bgClass} ${design.classes}`}
+      className={`relative min-h-[50vh] md:min-h-[70vh] flex flex-col justify-center py-8 md:py-24 px-6 overflow-hidden ${bgClass} ${design.classes}`}
       style={sectionStyle}
     >
       {theme === 'image' && <div className="absolute inset-0 bg-black/60" />}
@@ -71,7 +71,7 @@ const HeroBlock: FC<HeroProps> = (props) => {
       <div className={`relative z-10 max-w-7xl mx-auto w-full flex flex-col ${layoutClass}`}>
         {badge && (
           <div
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-8 ${
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-6 md:mb-8 ${
               isDark ? 'bg-white/10 border-white/25' : 'bg-primary/10 border-primary/20'
             }`}
           >
@@ -86,7 +86,7 @@ const HeroBlock: FC<HeroProps> = (props) => {
 
         {subtitle && (
           <div
-            className={`text-lg md:text-xl mb-10 max-w-2xl leading-relaxed [&_p]:m-0 [&_strong]:text-accent ${
+            className={`text-lg md:text-xl mb-8 md:mb-10 max-w-2xl leading-relaxed [&_p]:m-0 [&_strong]:text-accent ${
               isDark ? 'text-slate-300' : 'text-slate-600'
             }`}
             dangerouslySetInnerHTML={{ __html: subtitle }}
