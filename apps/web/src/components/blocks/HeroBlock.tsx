@@ -70,8 +70,12 @@ const HeroBlock: FC<HeroProps> = (props) => {
 
       <div className={`relative z-10 max-w-7xl mx-auto w-full flex flex-col ${layoutClass}`}>
         {badge && (
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20 mb-8">
-            <span className="text-xs font-bold text-primary uppercase tracking-widest">{badge}</span>
+          <div
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-8 ${
+              isDark ? 'bg-white/10 border-white/25' : 'bg-primary/10 border-primary/20'
+            }`}
+          >
+            <span className={`text-xs font-bold uppercase tracking-widest ${isDark ? 'text-white' : 'text-primary'}`}>{badge}</span>
           </div>
         )}
 
