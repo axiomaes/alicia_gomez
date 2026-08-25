@@ -5,6 +5,7 @@ import { generateText } from 'ai'
 import { createOpenAI } from '@ai-sdk/openai'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { createAnthropic } from '@ai-sdk/anthropic'
+import { createGroq } from '@ai-sdk/groq'
 import { sanitizeHtml } from '@/utils/sanitizeHtml'
 
 export async function checkAiIntegration() {
@@ -48,6 +49,13 @@ function getAiModel(integration: any) {
   } else if (provider === 'claude') {
     const anthropic = createAnthropic({ apiKey })
     return anthropic('claude-3-haiku-20240307')
+  } else if (provider === 'groq') {
+    // Groq: infraestructura propia (no revende OpenAI/Anthropic/Google), API
+    // compatible con OpenAI. Capa gratuita generosa -- buena opción de
+    // arranque para un cliente que todavía no tiene cuenta de pago en los
+    // otros tres proveedores.
+    const groq = createGroq({ apiKey })
+    return groq('llama-3.3-70b-versatile')
   }
 
   throw new Error("Proveedor IA no soportado.")

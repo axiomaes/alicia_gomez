@@ -11,6 +11,7 @@
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.38",
     "@ai-sdk/google": "^4.0.44",
+    "@ai-sdk/groq": "^4.0.31",
     "@ai-sdk/openai": "^4.0.41",
     "@hello-pangea/dnd": "^18.0.1",
     "@supabase/ssr": "^0.12.4",

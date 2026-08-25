@@ -61,13 +61,16 @@ export default async function IntegrationsPage() {
             await saveIntegration(formData)
           }} className="space-y-6 max-w-2xl">
             
-            <div className="grid grid-cols-3 gap-4">
-              {['openai', 'gemini', 'claude'].map(provider => (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {['openai', 'gemini', 'claude', 'groq'].map(provider => (
                 <label key={provider} className={`relative flex cursor-pointer rounded-xl border p-4 shadow-sm focus:outline-none ${aiIntegration.provider_name === provider ? 'border-indigo-600 ring-1 ring-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/10' : 'border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/50'}`}>
                   <input type="radio" name="providerName" value={provider} defaultChecked={aiIntegration.provider_name === provider} className="sr-only" />
                   <span className="flex flex-1">
                     <span className="flex flex-col">
                       <span className="block text-sm font-medium text-zinc-900 dark:text-white capitalize">{provider}</span>
+                      {provider === 'groq' && (
+                        <span className="text-[10px] font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 mt-0.5">Capa gratuita</span>
+                      )}
                     </span>
                   </span>
                 </label>
