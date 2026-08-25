@@ -7,7 +7,11 @@ import { Save, Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react'
 type BlockType = 'text' | 'image_text' | 'gallery' | 'contact' | 'pricing'
 
 export function PageEditor({ initialData }: { initialData: any }) {
-  const [lang, setLang] = useState<'es' | 'ca'>('es')
+  // Un solo idioma (castellano) -- el catalán venía de otro cliente base y
+  // generaba confusión (Alicia no lo necesita). page.title/slug/content
+  // siguen siendo objetos {es, ca} en la base de datos, así que se deja
+  // como constante en vez de reestructurar el esquema.
+  const lang = 'es' as const
   const [page, setPage] = useState(initialData)
   const [isSaving, setIsSaving] = useState(false)
 
@@ -62,20 +66,11 @@ export function PageEditor({ initialData }: { initialData: any }) {
       {/* Toolbar */}
       <div className="flex items-center justify-between p-4 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
         <div className="flex items-center gap-2">
-          <button 
-            onClick={() => setLang('es')}
-            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${lang === 'es' ? 'bg-indigo-600 text-white' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700'}`}
-          >
+          <span className="px-4 py-1.5 rounded-md text-sm font-medium bg-indigo-600 text-white">
             Español
-          </button>
-          <button 
-            onClick={() => setLang('ca')}
-            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${lang === 'ca' ? 'bg-indigo-600 text-white' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700'}`}
-          >
-            Català
-          </button>
+          </span>
         </div>
-        
+
         <div className="flex items-center gap-4">
           <label className="flex items-center gap-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 cursor-pointer">
             <input 

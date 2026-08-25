@@ -3,10 +3,10 @@ import { MessageCircle } from '@lucide/astro';
 
 interface Props {
   phone?: string;
-  lang?: 'es' | 'ca';
+  lang?: 'es';
 }
 
-const { phone, lang = 'es' } = Astro.props;
+const { phone } = Astro.props;
 
 // Sin teléfono configurado (contenido 'company.phone' vacío), no mostramos nada
 // en vez de enlazar a un número que no es del cliente.
@@ -19,11 +19,11 @@ const digits = phone?.replace(/[^0-9+]/g, '') ?? '';
     target="_blank"
     rel="noopener noreferrer"
     class="fixed bottom-6 right-6 z-[100] bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 group flex items-center gap-2"
-    aria-label={lang === 'es' ? "Contactar por WhatsApp" : "Contactar per WhatsApp"}
+    aria-label="Contactar por WhatsApp"
   >
     <MessageCircle class="size-8" />
     <span class="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 ease-in-out whitespace-nowrap font-bold">
-      {lang === 'es' ? "Contactar" : "Contactar"}
+      Contactar
     </span>
   </a>
 )}

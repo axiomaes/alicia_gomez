@@ -1,9 +1,9 @@
 ---
-import { Menu, X, Globe } from '@lucide/astro';
+import { Menu, X } from '@lucide/astro';
 import type { ResolvedTheme } from '../lib/theme';
 
 interface Props {
-  lang: 'es' | 'ca';
+  lang: 'es';
   theme?: ResolvedTheme;
 }
 
@@ -14,40 +14,31 @@ const tenantName = theme?.tenantName ?? 'Alicia Gómez Cuéllar';
 // Sitio de una sola página: la navegación es por anclas de sección, no por
 // rutas. Se prefija con /${lang}/ para que el enlace funcione igual estando
 // en la home o en cualquier página adicional que se cree desde el panel.
+// Un solo idioma (castellano) -- el catalán venía de otro cliente base y
+// generaba confusión (Alicia no lo necesita). Si en el futuro hace falta
+// otro idioma (inglés u otro), [lang]/[...slug].astro y esta traducción se
+// amplían entonces.
 const base = `/${lang}/`;
 
-const translations: Record<'es' | 'ca', { home: string; sobreMi: string; porQue: string; servicios: string; testimonios: string; blog: string; kb: string; cont: string; brand: string }> = {
-  es: {
-    home: "Inicio", sobreMi: "Sobre mí", porQue: "Por qué elegirme",
-    servicios: "Servicios", testimonios: "Testimonios", blog: "Blog", kb: "Ayuda", cont: "Contacto",
-    brand: "ABOGADA · ICAM 140626",
-  },
-  ca: {
-    home: "Inici", sobreMi: "Sobre mi", porQue: "Per què triar-me",
-    servicios: "Serveis", testimonios: "Testimonis", blog: "Blog", kb: "Ajuda", cont: "Contacte",
-    brand: "ADVOCADA · ICAM 140626",
-  }
+const t = {
+  home: "Inicio", sobreMi: "Sobre mí", porQue: "Por qué elegirme",
+  servicios: "Servicios", testimonios: "Testimonios", blog: "Blog", kb: "Ayuda", cont: "Contacto",
+  brand: "ABOGADA · ICAM 140626",
 };
 
-const t = translations[lang as 'es' | 'ca'];
 const links = {
   home: base,
   sobreMi: `${base}#sobre-mi`,
   porQue: `${base}#por-que-elegirme`,
   servicios: `${base}#servicios`,
   testimonios: `${base}#testimonios`,
-  // El blog y la Base de Conocimiento viven fuera de /es//ca/ (ver
+  // El blog y la Base de Conocimiento viven fuera de /es/ (ver
   // apps/web/src/pages/blog/ y base-de-conocimiento/) — una sola versión,
   // no duplicada por idioma.
   blog: `/blog`,
   kb: `/base-de-conocimiento`,
   cont: `${base}#contacto`,
 };
-
-// Logic to find current path equivalent in other language
-const currentPath = Astro.url.pathname;
-const otherLang = lang === 'es' ? 'ca' : 'es';
-const otherLangPath = `/${otherLang}/${currentPath.split('#')[1] ? '#' + currentPath.split('#')[1] : ''}`;
 
 // Fetch dynamic pages
 import { createClient } from '@supabase/supabase-js';
@@ -94,24 +85,10 @@ const dynamicLinks = (pagesData || []).map((p: any) => ({
       ))}
       <a href={links.cont} class="hover:text-accent transition">{t.cont}</a>
     </div>
-
-    <!-- Language Switcher -->
-    <div class="flex items-center gap-2 ml-4 border-l border-slate-200 pl-6 h-6">
-      <Globe class="size-4 text-slate-400" />
-      <div class="flex gap-2 text-[10px] font-bold">
-        <a href={lang === 'es' ? '#' : otherLangPath} class={lang === 'es' ? "text-accent" : "text-slate-400 hover:text-primary"}>ES</a>
-        <span class="text-slate-200">|</span>
-        <a href={lang === 'ca' ? '#' : otherLangPath} class={lang === 'ca' ? "text-accent" : "text-slate-400 hover:text-primary"}>CA</a>
-      </div>
-    </div>
   </div>
 
   <!-- Mobile Menu Button -->
   <div class="flex items-center gap-4 lg:hidden">
-    <a href={otherLangPath} class="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1">
-      <Globe class="size-3" />
-      {otherLang}
-    </a>
     <button class="text-primary" id="menu-toggle" aria-label="Abrir menú">
       <Menu class="size-6" id="icon-menu" />
     </button>
@@ -121,11 +98,7 @@ const dynamicLinks = (pagesData || []).map((p: any) => ({
 <!-- Mobile Menu Sidebar -->
 <div class="fixed inset-0 bg-slate-900/95 z-[110] translate-x-full transition-transform duration-500 lg:hidden" id="mobile-menu">
   <div class="flex flex-col h-full p-6">
-    <div class="flex justify-between items-center mb-16">
-      <div class="flex gap-4">
-         <a href={lang === 'es' ? '#' : otherLangPath} class={`text-lg font-bold ${lang === 'es' ? "text-accent" : "text-white/50"}`}>ES</a>
-         <a href={lang === 'ca' ? '#' : otherLangPath} class={`text-lg font-bold ${lang === 'ca' ? "text-accent" : "text-white/50"}`}>CA</a>
-      </div>
+    <div class="flex justify-end items-center mb-16">
       <button class="text-white" id="menu-close">
         <X class="size-8" />
       </button>

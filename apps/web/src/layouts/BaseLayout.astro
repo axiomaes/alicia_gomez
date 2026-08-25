@@ -9,7 +9,7 @@ import { getTenantSettings, getContent } from '../lib/supabase';
 interface Props {
 	title: string;
 	description?: string;
-	lang: 'es' | 'ca';
+	lang: 'es';
 	// Si la página que llama a BaseLayout ya ha pedido el diccionario de contenido,
 	// pásalo aquí para no volver a pedirlo — Navigation y Footer lo reciben de aquí
 	// en vez de hacer cada uno su propia llamada a Supabase.

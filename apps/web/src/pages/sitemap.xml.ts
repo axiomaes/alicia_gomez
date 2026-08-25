@@ -8,6 +8,7 @@ import { supabase } from '../lib/supabase';
 // Constructor de Páginas es un gap aparte).
 export const prerender = false;
 
+// Un solo idioma (castellano) -- el catalán venía de otro cliente base.
 const pages = [
   '',
   '/es',
@@ -15,11 +16,6 @@ const pages = [
   '/es/servicio-2',
   '/es/servicio-3',
   '/es/contacto',
-  '/ca',
-  '/ca/servicio-1',
-  '/ca/servicio-2',
-  '/ca/servicio-3',
-  '/ca/contacte',
   '/blog',
   '/base-de-conocimiento'
 ];
@@ -51,7 +47,7 @@ export const GET: APIRoute = async ({ request }) => {
     <loc>${baseUrl}${page}</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>${page === '' || page === '/es' || page === '/ca' ? '1.0' : '0.8'}</priority>
+    <priority>${page === '' || page === '/es' ? '1.0' : '0.8'}</priority>
   </url>`).join('')}
 </urlset>`;
 

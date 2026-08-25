@@ -26,7 +26,10 @@ const supabase = createClient(
   import.meta.env.PUBLIC_SUPABASE_ANON_KEY
 )
 
-const validLangs = ['es', 'ca', 'en']
+// Un solo idioma por ahora (el catalán venía de otro cliente base y
+// generaba confusión -- Alicia no lo necesita). Si en el futuro hace falta
+// inglés u otro, se añade aquí.
+const validLangs = ['es']
 if (!lang || !validLangs.includes(lang)) {
   return Astro.redirect('/404')
 }
@@ -66,7 +69,7 @@ const whatsappDigits = (c['company.phone'] || '').replace(/[^0-9+]/g, '').replac
 const whatsappUrl = whatsappDigits ? `https://wa.me/${whatsappDigits}` : undefined
 ---
 
-<BaseLayout title={`${finalTitle}`} description={finalDesc} lang={lang as 'es' | 'ca'} content={c}>
+<BaseLayout title={`${finalTitle}`} description={finalDesc} lang={lang as 'es'} content={c}>
 
   {(slug === undefined) && (
     <>
