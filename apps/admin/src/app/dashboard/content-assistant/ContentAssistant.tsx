@@ -12,9 +12,9 @@ interface ContentAssistantProps {
 }
 
 const TYPES: { id: ContentDraftType; label: string; icon: typeof FileText; hint: string }[] = [
-  { id: 'blog', label: 'Blog', icon: FileText, hint: 'Artículo completo para el blog de la web.' },
+  { id: 'blog', label: 'Blog', icon: FileText, hint: 'Con fecha, para noticias, casos y opinión.' },
   { id: 'linkedin', label: 'LinkedIn', icon: Share2, hint: 'Post listo para copiar y publicar tú mismo.' },
-  { id: 'kb', label: 'Base de Conocimiento', icon: BookOpen, hint: 'Artículo de ayuda público, pensado para SEO/GEO.' },
+  { id: 'kb', label: 'Base de Conocimiento', icon: BookOpen, hint: 'Se publica en tu web, sin fecha — responde una pregunta concreta (FAQ).' },
 ]
 
 // Mismo lenguaje visual que el Copiloto de Ventas del panel de leads --
