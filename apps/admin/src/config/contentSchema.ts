@@ -1,4 +1,4 @@
-export type FieldType = 'text' | 'textarea' | 'image' | 'richtext'
+export type FieldType = 'text' | 'textarea' | 'image' | 'richtext' | 'icon'
 
 export interface FieldConfig {
   key: string
@@ -32,37 +32,37 @@ export const contentSchema: SectionConfig[] = [
 
       { key: 'home.feat1.title', label: 'Por qué elegirme 1: Título', type: 'text' },
       { key: 'home.feat1.desc', label: 'Por qué elegirme 1: Descripción', type: 'textarea' },
-      { key: 'home.feat1.icon', label: 'Por qué elegirme 1: Icono (Tabler)', type: 'text' },
+      { key: 'home.feat1.icon', label: 'Por qué elegirme 1: Icono (Tabler)', type: 'icon' },
       { key: 'home.feat2.title', label: 'Por qué elegirme 2: Título', type: 'text' },
       { key: 'home.feat2.desc', label: 'Por qué elegirme 2: Descripción', type: 'textarea' },
-      { key: 'home.feat2.icon', label: 'Por qué elegirme 2: Icono (Tabler)', type: 'text' },
+      { key: 'home.feat2.icon', label: 'Por qué elegirme 2: Icono (Tabler)', type: 'icon' },
       { key: 'home.feat3.title', label: 'Por qué elegirme 3: Título', type: 'text' },
       { key: 'home.feat3.desc', label: 'Por qué elegirme 3: Descripción', type: 'textarea' },
-      { key: 'home.feat3.icon', label: 'Por qué elegirme 3: Icono (Tabler)', type: 'text' },
+      { key: 'home.feat3.icon', label: 'Por qué elegirme 3: Icono (Tabler)', type: 'icon' },
       { key: 'home.feat4.title', label: 'Por qué elegirme 4: Título', type: 'text' },
       { key: 'home.feat4.desc', label: 'Por qué elegirme 4: Descripción', type: 'textarea' },
-      { key: 'home.feat4.icon', label: 'Por qué elegirme 4: Icono (Tabler)', type: 'text' },
+      { key: 'home.feat4.icon', label: 'Por qué elegirme 4: Icono (Tabler)', type: 'icon' },
 
       { key: 'home.services.title', label: 'Servicios: Título de sección', type: 'text' },
       { key: 'home.services.subtitle', label: 'Servicios: Subtítulo de sección', type: 'textarea' },
       { key: 'home.srv1.title', label: 'Servicio 1: Título', type: 'text' },
       { key: 'home.srv1.desc', label: 'Servicio 1: Descripción', type: 'textarea' },
-      { key: 'home.srv1.icon', label: 'Servicio 1: Icono (Tabler)', type: 'text' },
+      { key: 'home.srv1.icon', label: 'Servicio 1: Icono (Tabler)', type: 'icon' },
       { key: 'home.srv2.title', label: 'Servicio 2: Título', type: 'text' },
       { key: 'home.srv2.desc', label: 'Servicio 2: Descripción', type: 'textarea' },
-      { key: 'home.srv2.icon', label: 'Servicio 2: Icono (Tabler)', type: 'text' },
+      { key: 'home.srv2.icon', label: 'Servicio 2: Icono (Tabler)', type: 'icon' },
       { key: 'home.srv3.title', label: 'Servicio 3: Título', type: 'text' },
       { key: 'home.srv3.desc', label: 'Servicio 3: Descripción', type: 'textarea' },
-      { key: 'home.srv3.icon', label: 'Servicio 3: Icono (Tabler)', type: 'text' },
+      { key: 'home.srv3.icon', label: 'Servicio 3: Icono (Tabler)', type: 'icon' },
       { key: 'home.srv4.title', label: 'Servicio 4: Título', type: 'text' },
       { key: 'home.srv4.desc', label: 'Servicio 4: Descripción', type: 'textarea' },
-      { key: 'home.srv4.icon', label: 'Servicio 4: Icono (Tabler)', type: 'text' },
+      { key: 'home.srv4.icon', label: 'Servicio 4: Icono (Tabler)', type: 'icon' },
       { key: 'home.srv5.title', label: 'Servicio 5: Título', type: 'text' },
       { key: 'home.srv5.desc', label: 'Servicio 5: Descripción', type: 'textarea' },
-      { key: 'home.srv5.icon', label: 'Servicio 5: Icono (Tabler)', type: 'text' },
+      { key: 'home.srv5.icon', label: 'Servicio 5: Icono (Tabler)', type: 'icon' },
       { key: 'home.srv6.title', label: 'Servicio 6: Título', type: 'text' },
       { key: 'home.srv6.desc', label: 'Servicio 6: Descripción', type: 'textarea' },
-      { key: 'home.srv6.icon', label: 'Servicio 6: Icono (Tabler)', type: 'text' },
+      { key: 'home.srv6.icon', label: 'Servicio 6: Icono (Tabler)', type: 'icon' },
 
       { key: 'home.testimonials.title', label: 'Testimonios: Título de sección', type: 'text' },
       { key: 'home.testimonials.subtitle', label: 'Testimonios: Subtítulo de sección', type: 'textarea' },

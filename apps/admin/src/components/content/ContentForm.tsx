@@ -4,6 +4,7 @@ import { useState, useTransition } from "react"
 import { contentSchema } from "@/config/contentSchema"
 import { ImageUploader } from "../ui/ImageUploader"
 import { RichTextEditor } from "../ui/RichTextEditor"
+import { IconPicker } from "../ui/IconPicker"
 import { saveContentBatch } from "@/app/dashboard/content/actions"
 import { CheckCircle2, Loader2, Save } from "lucide-react"
 
@@ -103,9 +104,16 @@ export function ContentForm({
               )}
               
               {field.type === 'image' && (
-                <ImageUploader 
-                  value={formData[field.key] || ''} 
-                  onChange={(url) => handleFieldChange(field.key, url)} 
+                <ImageUploader
+                  value={formData[field.key] || ''}
+                  onChange={(url) => handleFieldChange(field.key, url)}
+                />
+              )}
+
+              {field.type === 'icon' && (
+                <IconPicker
+                  value={formData[field.key] || ''}
+                  onChange={(name) => handleFieldChange(field.key, name)}
                 />
               )}
             </div>
