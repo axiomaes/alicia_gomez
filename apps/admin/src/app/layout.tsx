@@ -8,7 +8,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Axioma Starter",
+  title: "Alicia Gómez (Axioma Starter)",
   description: "Panel de Administración",
 };
 

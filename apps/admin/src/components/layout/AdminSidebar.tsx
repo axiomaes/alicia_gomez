@@ -25,8 +25,13 @@ export function AdminSidebar() {
           <div className="min-w-8 min-h-8 w-8 h-8 flex items-center justify-center shrink-0">
             <img src="/axioma_logo.svg" alt="Axioma Logo" className="w-full h-full object-contain" />
           </div>
-          <span className={`text-base font-bold tracking-tight text-zinc-900 dark:text-white transition-opacity duration-300 ${isCollapsed ? 'opacity-0 w-0' : 'opacity-100'}`}>
-            Axioma Starter
+          <span className={`flex flex-col leading-none transition-opacity duration-300 ${isCollapsed ? 'opacity-0 w-0' : 'opacity-100'}`}>
+            <span className="text-base font-bold tracking-tight text-zinc-900 dark:text-white whitespace-nowrap">
+              Alicia Gómez
+            </span>
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+              Axioma Starter
+            </span>
           </span>
         </Link>
       </div>
