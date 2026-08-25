@@ -2,6 +2,11 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { supabase } from '../../lib/supabase';
 
+// Sin esto, Astro hornea el listado una sola vez en el build (mismo motivo
+// que en blog/[slug].astro) y un artículo nuevo no aparece hasta el
+// siguiente deploy.
+export const prerender = false;
+
 const { data: blogs } = await supabase
   .from('blogs')
   .select('*')

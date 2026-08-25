@@ -122,3 +122,55 @@ export async function generateSuggestedReply(messages: string[], contactName: st
     return { success: false, error: error.message }
   }
 }
+
+export type ContentDraftType = 'blog' | 'linkedin' | 'kb'
+
+export type ContentDraftResult =
+  | { success: true; type: 'linkedin'; postText: string }
+  | { success: true; type: 'blog' | 'kb'; title: string; excerpt: string; contentHtml: string }
+  | { success: false; error: string }
+
+// Asistente IA de creación de contenido (Blog / LinkedIn / Base de
+// Conocimiento) -- mismo patrón que el resto de este fichero: gate de plan +
+// proveedor BYOK vía checkAiIntegration()/getAiModel(), sin lógica nueva de
+// gating. LinkedIn solo genera texto (sin publicación automática); Blog y
+// Base de Conocimiento devuelven título + extracto + HTML saneado, listos
+// para guardarse como borrador real.
+export async function generateContentDraft(type: ContentDraftType, topic: string, keywords?: string): Promise<ContentDraftResult> {
+  try {
+    const integration = await checkAiIntegration()
+    const model = getAiModel(integration)
+    const userPrompt = `Tema: ${topic}${keywords ? `\nPalabras clave a incluir: ${keywords}` : ''}`
+
+    if (type === 'linkedin') {
+      const systemPrompt = "Eres un ghostwriter experto en LinkedIn B2B. Escribe un post original y listo para publicar: un gancho fuerte en la primera línea, cuerpo corto con saltos de línea (nada de bloques densos de texto), un cierre con llamada a la acción, y 3-5 hashtags relevantes al final. Tono profesional pero cercano, sin abusar de emojis. Devuelve solo el texto del post, nada de explicaciones ni comillas envolventes."
+
+      const { text } = await generateText({ model, system: systemPrompt, prompt: userPrompt })
+      return { success: true, type, postText: text.trim() }
+    }
+
+    const isKb = type === 'kb'
+    const roleAndGoal = isKb
+      ? "Eres un redactor técnico experto en bases de conocimiento y ayuda al cliente. Escribe un artículo claro y bien estructurado que resuelva una duda frecuente, optimizado para que tanto personas como asistentes de IA lo encuentren útil (GEO)."
+      : "Eres un redactor experto en blogs corporativos y SEO. Escribe un artículo de blog persuasivo y bien estructurado sobre el tema dado."
+    const systemPrompt = `${roleAndGoal} Responde EXACTAMENTE con este formato, sin nada antes ni después:\nTITULO: <título del artículo>\nEXTRACTO: <resumen de 1-2 frases>\n---\n<cuerpo del artículo en HTML limpio, solo etiquetas <p>, <h2>, <h3>, <ul>, <li>, <strong>, <em>>`
+
+    const { text: raw } = await generateText({ model, system: systemPrompt, prompt: userPrompt })
+
+    const [head, ...bodyParts] = raw.split(/\n---\n/)
+    const bodyHtml = bodyParts.join('\n---\n').replace(/```html/g, '').replace(/```/g, '').trim()
+    const titleMatch = head.match(/TITULO:\s*(.+)/i)
+    const excerptMatch = head.match(/EXTRACTO:\s*(.+)/i)
+
+    return {
+      success: true,
+      type,
+      title: (titleMatch?.[1] || topic).trim(),
+      excerpt: (excerptMatch?.[1] || '').trim(),
+      contentHtml: sanitizeHtml(bodyHtml),
+    }
+  } catch (error: any) {
+    console.error("AI Error:", error)
+    return { success: false, error: error.message }
+  }
+}

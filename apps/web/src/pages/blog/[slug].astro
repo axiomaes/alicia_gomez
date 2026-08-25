@@ -2,18 +2,21 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { supabase } from '../../lib/supabase';
 
-export async function getStaticPaths() {
-  const { data: blogs } = await supabase.from('blogs').select('slug').eq('is_published', true);
-  return blogs?.map((blog: any) => ({
-    params: { slug: blog.slug },
-  })) || [];
-}
+// Antes esta página usaba getStaticPaths() -- generaba las rutas una sola
+// vez en el build, así que un artículo nuevo (o recién publicado) no
+// aparecía hasta el siguiente deploy. Se cambia a prerender=false (una
+// consulta por visita) para que el Blog refleje lo que hay en el panel al
+// momento. Como ya no hay getStaticPaths filtrando los publicados de
+// antemano, hay que filtrar is_published aquí explícitamente o un borrador
+// quedaría visible por URL directa.
+export const prerender = false;
 
 const { slug } = Astro.params;
 const { data: blog } = await supabase
   .from('blogs')
   .select('*')
   .eq('slug', slug)
+  .eq('is_published', true)
   .single();
 
 if (!blog) {

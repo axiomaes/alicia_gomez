@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { supabase } from '../../lib/supabase';
+
+export const prerender = false;
+
+// Calco de apps/web/src/pages/blog/index.astro, apuntando a
+// knowledge_base_articles.
+const { data: articles } = await supabase
+  .from('knowledge_base_articles')
+  .select('*')
+  .eq('is_published', true)
+  .order('published_at', { ascending: false });
+---
+
+<BaseLayout
+  title="Base de Conocimiento | Alicia Gómez Cuéllar"
+  description="Guías y respuestas a las dudas más frecuentes."
+  lang="es"
+>
+  <section class="py-16 md:py-32 px-6">
+    <div class="max-w-3xl mx-auto">
+      <header class="mb-16 text-center">
+        <span class="text-xs font-bold uppercase tracking-[2px] text-accent">Base de Conocimiento</span>
+        <h1 class="text-4xl md:text-5xl mt-3">Guías y dudas frecuentes</h1>
+      </header>
+
+      <div class="space-y-6">
+        {articles && articles.length > 0 ? (
+          articles.map((article: any) => (
+            <article class="border border-primary/10 rounded-2xl p-8 bg-white hover:border-accent/50 hover:shadow-lg transition-all duration-300">
+              <h2 class="text-2xl mb-2">
+                <a href={`/base-de-conocimiento/${article.slug}`} class="hover:text-accent transition-colors">{article.title}</a>
+              </h2>
+              {article.excerpt && <p class="text-slate-600 leading-relaxed">{article.excerpt}</p>}
+              <a href={`/base-de-conocimiento/${article.slug}`} class="inline-flex items-center gap-1.5 mt-5 text-sm font-semibold text-accent hover:gap-2.5 transition-all">
+                Leer más <span aria-hidden="true">→</span>
+              </a>
+            </article>
+          ))
+        ) : (
+          <p class="text-center text-slate-400 py-16">Todavía no hay artículos publicados.</p>
+        )}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

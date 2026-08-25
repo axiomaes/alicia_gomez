@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { supabase } from '../../lib/supabase';
+
+export const prerender = false;
+
+// Calco de apps/web/src/pages/blog/[slug].astro, apuntando a
+// knowledge_base_articles.
+const { slug } = Astro.params;
+const { data: article } = await supabase
+  .from('knowledge_base_articles')
+  .select('*')
+  .eq('slug', slug)
+  .eq('is_published', true)
+  .single();
+
+if (!article) {
+  return Astro.redirect('/404');
+}
+---
+
+<BaseLayout
+  title={`${article.title} | Alicia Gómez Cuéllar`}
+  description={article.excerpt || ''}
+  lang="es"
+>
+  <article class="py-16 md:py-32 px-6">
+    <div class="max-w-2xl mx-auto">
+      <a href="/base-de-conocimiento" class="inline-flex items-center gap-1.5 text-sm font-semibold text-accent mb-10 hover:gap-2.5 transition-all">
+        <span aria-hidden="true">←</span> Volver a la Base de Conocimiento
+      </a>
+      <h1 class="text-4xl md:text-5xl mb-10">{article.title}</h1>
+
+      <div
+        class="prose prose-slate max-w-none prose-headings:font-normal prose-a:text-accent prose-strong:text-primary"
+        set:html={article.content}
+      />
+    </div>
+  </article>
+</BaseLayout>

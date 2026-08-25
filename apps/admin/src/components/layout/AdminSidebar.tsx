@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { LayoutDashboard, FileText, Image as ImageIcon, Users, LogOut, Edit3, ChevronRight, ChevronLeft, ChevronDown, Palette, Plug } from 'lucide-react'
+import { LayoutDashboard, FileText, Image as ImageIcon, Users, LogOut, Edit3, ChevronRight, ChevronLeft, ChevronDown, Palette, Plug, BookOpen, Sparkles } from 'lucide-react'
 import { contentSchema } from '@/config/contentSchema'
 
 export function AdminSidebar() {
@@ -97,15 +97,29 @@ export function AdminSidebar() {
           isCollapsed={isCollapsed} 
         />
 
-        <SidebarLink 
-          href="/dashboard/blogs" 
-          icon={<FileText className="w-5 h-5 shrink-0" />} 
-          label="Blog" 
-          isActive={pathname.startsWith('/dashboard/blogs')} 
-          isCollapsed={isCollapsed} 
+        <SidebarLink
+          href="/dashboard/blogs"
+          icon={<FileText className="w-5 h-5 shrink-0" />}
+          label="Blog"
+          isActive={pathname.startsWith('/dashboard/blogs')}
+          isCollapsed={isCollapsed}
         />
-        <SidebarLink 
-          href="/dashboard/settings" 
+        <SidebarLink
+          href="/dashboard/knowledge-base"
+          icon={<BookOpen className="w-5 h-5 shrink-0" />}
+          label="Base de Conocimiento"
+          isActive={pathname.startsWith('/dashboard/knowledge-base')}
+          isCollapsed={isCollapsed}
+        />
+        <SidebarLink
+          href="/dashboard/content-assistant"
+          icon={<Sparkles className="w-5 h-5 shrink-0" />}
+          label="Asistente IA"
+          isActive={pathname.startsWith('/dashboard/content-assistant')}
+          isCollapsed={isCollapsed}
+        />
+        <SidebarLink
+          href="/dashboard/settings"
           icon={<Palette className="w-5 h-5 shrink-0" />} 
           label="Apariencia" 
           isActive={pathname.startsWith('/dashboard/settings')} 

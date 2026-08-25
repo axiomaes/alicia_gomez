@@ -16,15 +16,15 @@ const tenantName = theme?.tenantName ?? 'Alicia Gómez Cuéllar';
 // en la home o en cualquier página adicional que se cree desde el panel.
 const base = `/${lang}/`;
 
-const translations: Record<'es' | 'ca', { home: string; sobreMi: string; porQue: string; servicios: string; testimonios: string; blog: string; cont: string; brand: string }> = {
+const translations: Record<'es' | 'ca', { home: string; sobreMi: string; porQue: string; servicios: string; testimonios: string; blog: string; kb: string; cont: string; brand: string }> = {
   es: {
     home: "Inicio", sobreMi: "Sobre mí", porQue: "Por qué elegirme",
-    servicios: "Servicios", testimonios: "Testimonios", blog: "Blog", cont: "Contacto",
+    servicios: "Servicios", testimonios: "Testimonios", blog: "Blog", kb: "Ayuda", cont: "Contacto",
     brand: "ABOGADA · ICAM 140626",
   },
   ca: {
     home: "Inici", sobreMi: "Sobre mi", porQue: "Per què triar-me",
-    servicios: "Serveis", testimonios: "Testimonis", blog: "Blog", cont: "Contacte",
+    servicios: "Serveis", testimonios: "Testimonis", blog: "Blog", kb: "Ajuda", cont: "Contacte",
     brand: "ADVOCADA · ICAM 140626",
   }
 };
@@ -36,9 +36,11 @@ const links = {
   porQue: `${base}#por-que-elegirme`,
   servicios: `${base}#servicios`,
   testimonios: `${base}#testimonios`,
-  // El blog vive fuera de /es//ca/ (ver apps/web/src/pages/blog/) — una sola
-  // versión, no duplicada por idioma.
+  // El blog y la Base de Conocimiento viven fuera de /es//ca/ (ver
+  // apps/web/src/pages/blog/ y base-de-conocimiento/) — una sola versión,
+  // no duplicada por idioma.
   blog: `/blog`,
+  kb: `/base-de-conocimiento`,
   cont: `${base}#contacto`,
 };
 
@@ -86,6 +88,7 @@ const dynamicLinks = (pagesData || []).map((p: any) => ({
       <a href={links.servicios} class="hover:text-accent transition">{t.servicios}</a>
       <a href={links.testimonios} class="hover:text-accent transition">{t.testimonios}</a>
       <a href={links.blog} class="hover:text-accent transition">{t.blog}</a>
+      <a href={links.kb} class="hover:text-accent transition">{t.kb}</a>
       {dynamicLinks.map((link: any) => (
         <a href={link.url} class="hover:text-accent transition">{link.title}</a>
       ))}
@@ -134,6 +137,7 @@ const dynamicLinks = (pagesData || []).map((p: any) => ({
       <a href={links.servicios} class="hover:text-accent transition">{t.servicios}</a>
       <a href={links.testimonios} class="hover:text-accent transition">{t.testimonios}</a>
       <a href={links.blog} class="hover:text-accent transition">{t.blog}</a>
+      <a href={links.kb} class="hover:text-accent transition">{t.kb}</a>
       {dynamicLinks.map((link: any) => (
         <a href={link.url} class="hover:text-accent transition">{link.title}</a>
       ))}
