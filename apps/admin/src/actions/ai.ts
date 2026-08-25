@@ -53,9 +53,14 @@ function getAiModel(integration: any) {
     // Groq: infraestructura propia (no revende OpenAI/Anthropic/Google), API
     // compatible con OpenAI. Capa gratuita generosa -- buena opción de
     // arranque para un cliente que todavía no tiene cuenta de pago en los
-    // otros tres proveedores.
+    // otros tres proveedores. Groq retira/renombra modelos con cierta
+    // frecuencia -- verificado contra GET /openai/v1/models con una clave
+    // real el 25/08/2026; gpt-oss-120b es el modelo de propósito general
+    // más grande disponible en ese momento (nada de "llama-3.x", ya
+    // retirados). Si vuelve a fallar con "model does not exist", repetir esa
+    // consulta para ver el catálogo vigente.
     const groq = createGroq({ apiKey })
-    return groq('llama-3.3-70b-versatile')
+    return groq('openai/gpt-oss-120b')
   }
 
   throw new Error("Proveedor IA no soportado.")
