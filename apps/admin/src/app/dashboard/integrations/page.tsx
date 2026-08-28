@@ -1,7 +1,8 @@
 import { createClient } from '@/utils/supabase/server'
-import { saveIntegration } from './actions'
+import { saveAiIntegrations, saveEmailIntegration } from './actions'
 import { Lock, Cpu, Mail } from 'lucide-react'
 import { ProviderRadioGroup } from './ProviderRadioGroup'
+import { AiProviderList } from './AiProviderList'
 
 export default async function IntegrationsPage() {
   const supabase = await createClient()
@@ -20,7 +21,10 @@ export default async function IntegrationsPage() {
     .from('tenant_integrations')
     .select('*')
 
-  const aiIntegration = integrations?.find(i => i.provider_type === 'ai_llm') || { provider_name: 'openai', api_key: '', is_active: false }
+  // La IA ahora puede tener varias filas activas a la vez (una por
+  // proveedor) -- ver AiProviderList y actions.ts (saveAiIntegrations). El
+  // email sigue siendo uno solo.
+  const aiIntegrations = integrations?.filter(i => i.provider_type === 'ai_llm') || []
   const emailIntegration = integrations?.find(i => i.provider_type === 'email') || { provider_name: 'brevo', api_key: '', is_active: false }
 
   return (
@@ -33,7 +37,7 @@ export default async function IntegrationsPage() {
       </div>
 
       <div className="grid gap-8">
-        
+
         {/* IA INTEGRATION */}
         <section className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 rounded-2xl p-8 relative overflow-hidden">
           {!isPro && (
@@ -56,43 +60,8 @@ export default async function IntegrationsPage() {
             </div>
           </div>
 
-          <form action={async (formData) => {
-            "use server"
-            formData.append('providerType', 'ai_llm')
-            await saveIntegration(formData)
-          }} className="space-y-6 max-w-2xl">
-            
-            <ProviderRadioGroup
-              name="providerName"
-              defaultValue={aiIntegration.provider_name}
-              activeClassName="border-indigo-600 ring-1 ring-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/10"
-              options={[
-                { id: 'openai', label: 'OpenAI' },
-                { id: 'gemini', label: 'Gemini' },
-                { id: 'claude', label: 'Claude' },
-                { id: 'groq', label: 'Groq', badge: 'Capa gratuita' },
-              ]}
-            />
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">API Key</label>
-              <input
-                type="password"
-                name="apiKey"
-                autoComplete="off"
-                placeholder={aiIntegration.api_key ? '•••••••••••••••• (clave guardada — escribe para reemplazarla)' : 'sk-...'}
-                className="w-full px-4 py-2.5 bg-zinc-50 dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <p className="text-xs text-zinc-500">Por seguridad, la clave guardada nunca se muestra. Deja este campo vacío para conservarla o escribe una nueva para sustituirla.</p>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" name="isActive" value="true" defaultChecked={aiIntegration.is_active} className="sr-only peer" />
-                <div className="w-11 h-6 bg-zinc-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-zinc-600 peer-checked:bg-indigo-600"></div>
-                <span className="ml-3 text-sm font-medium text-zinc-900 dark:text-zinc-300">Habilitar IA en el Panel</span>
-              </label>
-            </div>
+          <form action={saveAiIntegrations} className="space-y-6 max-w-2xl">
+            <AiProviderList integrations={aiIntegrations} />
 
             <button type="submit" disabled={!isPro} className="px-5 py-2.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-medium rounded-xl hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors">
               Guardar Configuración IA
@@ -112,12 +81,8 @@ export default async function IntegrationsPage() {
             </div>
           </div>
 
-          <form action={async (formData) => {
-            "use server"
-            formData.append('providerType', 'email')
-            await saveIntegration(formData)
-          }} className="space-y-6 max-w-2xl">
-            
+          <form action={saveEmailIntegration} className="space-y-6 max-w-2xl">
+
             <ProviderRadioGroup
               name="providerName"
               defaultValue={emailIntegration.provider_name}
