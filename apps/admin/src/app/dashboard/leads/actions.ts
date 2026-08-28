@@ -111,7 +111,7 @@ export async function addNote(formData: FormData) {
 }
 
 // Resuelve el proveedor de email activo del tenant (BYOK) y el remitente a usar.
-// Mismo patrón que checkAiIntegrations()/getAiModel() en actions/ai.ts: la clave
+// Mismo patrón que checkAiIntegration()/getAiModel() en actions/ai.ts: la clave
 // vive en tenant_integrations, nunca en variables de entorno fijas.
 async function resolveEmailSender(supabase: Awaited<ReturnType<typeof createClient>>) {
   const { data: integration } = await supabase

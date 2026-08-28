@@ -12,17 +12,21 @@ interface TenantIntegration {
   provider_name: string
   api_key: string
   is_active: boolean
+  base_url?: string | null
+  model_override?: string | null
 }
 
-// Orden fijo de fallback: si el primero activo falla (sin tokens, error, lo
-// que sea), se prueba el siguiente de esta lista. No es configurable por el
-// cliente -- ver plan de implementación del 25/08/2026.
-const PROVIDER_PRIORITY = ['openai', 'gemini', 'claude', 'groq']
-
-// Confirma que el tenant tiene plan Pro/Enterprise y devuelve TODAS las
-// integraciones de IA activas y con clave (BYOK), ordenadas por
-// PROVIDER_PRIORITY -- puede haber varias a la vez (antes, como mucho una).
-export async function checkAiIntegrations(): Promise<TenantIntegration[]> {
+// Confirma que el tenant tiene plan Pro/Enterprise y devuelve la
+// integración de IA "en uso" (is_active=true) -- el cliente puede tener
+// guardadas las claves de varios proveedores a la vez (para cambiar rápido
+// si al que usa se le acaban los tokens), pero elige a mano cuál está en
+// uso en cada momento -- nunca automático, para que no le cambie de IA sin
+// que se entere (importa especialmente aquí: Alicia usa Prudencia.ai, una
+// IA jurídica especializada, no cualquier modelo genérico vale igual). Ver
+// plan de implementación del 25/08/2026. is_active=true en como mucho una
+// fila a la vez, garantizado por saveAiIntegrations() en
+// apps/admin/src/app/dashboard/integrations/actions.ts.
+export async function checkAiIntegration(): Promise<TenantIntegration> {
   const supabase = await createClient()
 
   // Verify Plan
@@ -36,21 +40,18 @@ export async function checkAiIntegrations(): Promise<TenantIntegration[]> {
     throw new Error("El módulo Experto IA requiere un Plan Pro o Enterprise.")
   }
 
-  const { data: integrations } = await supabase
+  const { data: integration } = await supabase
     .from('tenant_integrations')
     .select('*')
     .eq('provider_type', 'ai_llm')
     .eq('is_active', true)
+    .maybeSingle()
 
-  const usable = (integrations || [])
-    .filter((i) => !!i.api_key)
-    .sort((a, b) => PROVIDER_PRIORITY.indexOf(a.provider_name) - PROVIDER_PRIORITY.indexOf(b.provider_name))
-
-  if (usable.length === 0) {
+  if (!integration || !integration.api_key) {
     throw new Error("La integración de IA no está configurada o está desactivada. Revisa la pestaña Integraciones.")
   }
 
-  return usable
+  return integration
 }
 
 function getAiModel(integration: TenantIntegration) {
@@ -78,39 +79,28 @@ function getAiModel(integration: TenantIntegration) {
     // consulta para ver el catálogo vigente.
     const groq = createGroq({ apiKey })
     return groq('openai/gpt-oss-120b')
+  } else if (provider === 'prudencia') {
+    // Prudencia.ai: IA jurídica que ya usa Alicia. NO publica documentación
+    // técnica de API (comprobado el 25/08/2026) -- se asume formato
+    // compatible con OpenAI (lo más común en pasarelas de terceros) contra
+    // la URL y el modelo que el propio cliente configure en Integraciones,
+    // porque no hay valores conocidos de antemano que hardcodear. Si al
+    // probar con una clave real esto falla, hace falta documentación real
+    // de Prudencia (info@prudencia.ai) para ajustar esta rama.
+    if (!integration.base_url) {
+      throw new Error("Falta la URL de la API de Prudencia. Configúrala en Integraciones.")
+    }
+    const prudencia = createOpenAI({ apiKey, baseURL: integration.base_url })
+    return prudencia(integration.model_override || 'default')
   }
 
   throw new Error("Proveedor IA no soportado.")
 }
 
-// Llama a generateText() probando cada integración en orden hasta que una
-// funcione -- si la primera falla (créditos agotados, clave revocada,
-// proveedor caído, lo que sea) prueba la siguiente en vez de fallar de
-// golpe. `integrations` ya viene ordenada por checkAiIntegrations().
-async function generateTextWithFallback(
-  integrations: TenantIntegration[],
-  options: { system: string; prompt: string }
-): Promise<{ text: string; providerUsed: string }> {
-  let lastError: unknown
-
-  for (const integration of integrations) {
-    try {
-      const model = getAiModel(integration)
-      const { text } = await generateText({ model, system: options.system, prompt: options.prompt })
-      return { text, providerUsed: integration.provider_name }
-    } catch (error) {
-      console.error(`[IA] Fallo con el proveedor "${integration.provider_name}", probando el siguiente activo:`, error)
-      lastError = error
-    }
-  }
-
-  const lastMessage = lastError instanceof Error ? lastError.message : String(lastError)
-  throw new Error(`No se pudo generar contenido con ninguno de los proveedores de IA configurados. Último error: ${lastMessage}`)
-}
-
 export async function improveTextWithAi(text: string, instruction: string) {
   try {
-    const integrations = await checkAiIntegrations()
+    const integration = await checkAiIntegration()
+    const model = getAiModel(integration)
 
     const systemPrompt = "Eres un asistente experto en redacción persuasiva y SEO para páginas web corporativas. Debes devolver estrictamente HTML limpio válido (etiquetas <p>, <strong>, <em>, <h1>, <h2>, <ul>, <li>). NO devuelvas bloques de markdown ```html. Devuelve directamente el código HTML. Mantén el tono profesional."
 
@@ -125,7 +115,11 @@ export async function improveTextWithAi(text: string, instruction: string) {
       userPrompt = `Aplica esta instrucción: "${instruction}" al siguiente texto HTML:\n\n${text}`
     }
 
-    const { text: generatedHtml } = await generateTextWithFallback(integrations, { system: systemPrompt, prompt: userPrompt })
+    const { text: generatedHtml } = await generateText({
+      model,
+      system: systemPrompt,
+      prompt: userPrompt,
+    })
 
     const cleanHtml = generatedHtml.replace(/```html/g, '').replace(/```/g, '').trim()
     return { success: true, html: sanitizeHtml(cleanHtml) }
@@ -137,11 +131,13 @@ export async function improveTextWithAi(text: string, instruction: string) {
 
 export async function generateLeadSummary(messages: string[]) {
   try {
-    const integrations = await checkAiIntegrations()
+    const integration = await checkAiIntegration()
+    const model = getAiModel(integration)
 
     const systemPrompt = "Eres un analista de ventas. Analiza el siguiente historial de mensajes de un prospecto/lead (notas, correos, formularios) y genera un resumen ejecutivo MUY BREVE (máximo 2-3 líneas) indicando el nivel de interés, si es un ticket alto, y cuál debería ser el próximo paso. Responde en español directo, sin formalismos."
 
-    const { text: summary } = await generateTextWithFallback(integrations, {
+    const { text: summary } = await generateText({
+      model,
       system: systemPrompt,
       prompt: "Historial:\n" + messages.join("\n\n"),
     })
@@ -154,11 +150,13 @@ export async function generateLeadSummary(messages: string[]) {
 
 export async function generateSuggestedReply(messages: string[], contactName: string) {
   try {
-    const integrations = await checkAiIntegrations()
+    const integration = await checkAiIntegration()
+    const model = getAiModel(integration)
 
     const systemPrompt = "Eres un comercial experto. Escribe un borrador de correo de respuesta (solo el cuerpo del mensaje) para este lead. Sé profesional, persuasivo y orienta la respuesta a cerrar una llamada o reunión. No incluyas Asunto, solo el texto del correo."
 
-    const { text: replyBody } = await generateTextWithFallback(integrations, {
+    const { text: replyBody } = await generateText({
+      model,
       system: systemPrompt,
       prompt: `Lead Nombre: ${contactName}\n\nHistorial del Lead:\n${messages.join("\n\n")}`,
     })
@@ -178,19 +176,20 @@ export type ContentDraftResult =
 
 // Asistente IA de creación de contenido (Blog / LinkedIn / Base de
 // Conocimiento) -- mismo patrón que el resto de este fichero: gate de plan +
-// proveedores BYOK vía checkAiIntegrations()/generateTextWithFallback(),
-// sin lógica nueva de gating. LinkedIn solo genera texto (sin publicación
-// automática); Blog y Base de Conocimiento devuelven título + extracto +
-// HTML saneado, listos para guardarse como borrador real.
+// proveedor BYOK vía checkAiIntegration()/getAiModel(), sin lógica nueva de
+// gating. LinkedIn solo genera texto (sin publicación automática); Blog y
+// Base de Conocimiento devuelven título + extracto + HTML saneado, listos
+// para guardarse como borrador real.
 export async function generateContentDraft(type: ContentDraftType, topic: string, keywords?: string): Promise<ContentDraftResult> {
   try {
-    const integrations = await checkAiIntegrations()
+    const integration = await checkAiIntegration()
+    const model = getAiModel(integration)
     const userPrompt = `Tema: ${topic}${keywords ? `\nPalabras clave a incluir: ${keywords}` : ''}`
 
     if (type === 'linkedin') {
       const systemPrompt = "Eres un ghostwriter experto en LinkedIn B2B. Escribe un post original y listo para publicar: un gancho fuerte en la primera línea, cuerpo corto con saltos de línea (nada de bloques densos de texto), un cierre con llamada a la acción, y 3-5 hashtags relevantes al final. Tono profesional pero cercano, sin abusar de emojis. Devuelve solo el texto del post, nada de explicaciones ni comillas envolventes."
 
-      const { text } = await generateTextWithFallback(integrations, { system: systemPrompt, prompt: userPrompt })
+      const { text } = await generateText({ model, system: systemPrompt, prompt: userPrompt })
       return { success: true, type, postText: text.trim() }
     }
 
@@ -200,7 +199,7 @@ export async function generateContentDraft(type: ContentDraftType, topic: string
       : "Eres un redactor experto en blogs corporativos y SEO. Escribe un artículo de blog persuasivo y bien estructurado sobre el tema dado."
     const systemPrompt = `${roleAndGoal} Responde EXACTAMENTE con este formato, sin nada antes ni después:\nTITULO: <título del artículo>\nEXTRACTO: <resumen de 1-2 frases>\n---\n<cuerpo del artículo en HTML limpio, solo etiquetas <p>, <h2>, <h3>, <ul>, <li>, <strong>, <em>>`
 
-    const { text: raw } = await generateTextWithFallback(integrations, { system: systemPrompt, prompt: userPrompt })
+    const { text: raw } = await generateText({ model, system: systemPrompt, prompt: userPrompt })
 
     const [head, ...bodyParts] = raw.split(/\n---\n/)
     const bodyHtml = bodyParts.join('\n---\n').replace(/```html/g, '').replace(/```/g, '').trim()

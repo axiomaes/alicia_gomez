@@ -3,16 +3,19 @@
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 
-// Mismo orden que PROVIDER_PRIORITY en apps/admin/src/actions/ai.ts -- se
-// guardan aquí uno por uno, no importa el orden de guardado.
-const AI_PROVIDERS = ['openai', 'gemini', 'claude', 'groq']
+// Mismo orden que en AiProviderList.tsx. Prudencia además de clave necesita
+// URL/modelo (no tiene endpoint fijo conocido, a diferencia de los otros
+// cuatro) -- ver apps/admin/src/actions/ai.ts (getAiModel).
+const AI_PROVIDERS = ['openai', 'gemini', 'claude', 'groq', 'prudencia']
 
-// Antes solo se podía tener UN proveedor de IA guardado a la vez
-// (UNIQUE(provider_type)); ahora cada proveedor es su propia fila
-// (UNIQUE(provider_type, provider_name)) y se pueden activar varios para
-// que apps/admin/src/actions/ai.ts pruebe el siguiente si el primero
-// falla. El formulario manda un par apiKey_<proveedor>/isActive_<proveedor>
-// por cada uno; aquí se hace un upsert en lote.
+// El cliente puede guardar la clave de varios proveedores a la vez (cada
+// uno su propia fila, UNIQUE(provider_type, provider_name)), pero elige a
+// mano cuál está "en uso" -- nunca automático (ver plan de implementación
+// del 25/08/2026: Alicia usa Prudencia.ai, una IA jurídica especializada,
+// y le importa cuál responde). El formulario manda un campo
+// apiKey_<proveedor> por cada tarjeta y un único radio "activeProvider"
+// con el elegido; aquí se hace un upsert en lote marcando is_active=true
+// solo en ese, false en el resto.
 export async function saveAiIntegrations(formData: FormData) {
   const supabase = await createClient()
 
@@ -22,6 +25,7 @@ export async function saveAiIntegrations(formData: FormData) {
     .eq('provider_type', 'ai_llm')
 
   const existingKeyByProvider = new Map((existingRows || []).map((r) => [r.provider_name, r.api_key ?? '']))
+  const activeProvider = formData.get('activeProvider') as string | null
 
   const rows = AI_PROVIDERS.map((provider) => {
     const inputKey = ((formData.get(`apiKey_${provider}`) as string) ?? '').trim()
@@ -29,15 +33,21 @@ export async function saveAiIntegrations(formData: FormData) {
     // reenvía la clave guardada al navegador) -- si no se escribe una
     // nueva, se conserva la que ya había para ESE proveedor.
     const apiKey = inputKey || existingKeyByProvider.get(provider) || ''
-    const isActive = formData.get(`isActive_${provider}`) === 'true'
 
-    return {
+    const row: Record<string, unknown> = {
       provider_type: 'ai_llm',
       provider_name: provider,
       api_key: apiKey,
-      is_active: isActive,
+      is_active: provider === activeProvider,
       updated_at: new Date().toISOString(),
     }
+
+    if (provider === 'prudencia') {
+      row.base_url = ((formData.get(`baseUrl_${provider}`) as string) ?? '').trim() || null
+      row.model_override = ((formData.get(`modelOverride_${provider}`) as string) ?? '').trim() || null
+    }
+
+    return row
   })
 
   const { error } = await supabase
